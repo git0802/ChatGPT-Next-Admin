@@ -8,32 +8,24 @@ if (!MONGODB_URI) {
   );
 }
 
-let cached = mongoose;
+let cached = global.mongoose || { conn: null, promise: null };
 
-if (!cached) {
-  cached = mongoose = { conn: null, promise: null };
+if (!cached.promise) {
+  const opts = {
+    bufferCommands: false,
+  };
+
+  cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    return mongoose;
+  });
 }
 
 async function dbConnect() {
-  if (cached.conn) {
-    return cached.conn;
+  if (!cached.conn) {
+    await cached.promise;
+    cached.conn = true;
   }
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
-    });
-  }
-  try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
-  }
-
-  return cached.conn;
+  return mongoose;
 }
 
 export default dbConnect;

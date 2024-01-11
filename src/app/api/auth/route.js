@@ -31,9 +31,10 @@ export async function POST(request) {
     lastName, // Property shorthand used here
   };
 
-  await createData(newData);
+  const status = await createData(newData);
+
   const json_response = {
-    status: "success",
+    status
   };
   return NextResponse.json(json_response);
 }

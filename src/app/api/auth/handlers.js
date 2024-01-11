@@ -14,9 +14,14 @@ export async function createData(newData) {
   // Create a new instance of the Data model and save it to the database
   await dbConnect();
   const data = new User(newData);
-  const checkReg = await User.findOne({ userEmail: data.email });
+  const checkReg = await User.findOne({ email: data.email });
 
-  if (!checkReg) await data.save();
+  if (!checkReg) {
+    await data.save();
+    return "success";
+  } else {
+    return "An account with the given email already exists.";
+  }
     // await User.updateOne(
     //   { userEmail: data.userEmail },
     //   { $set: { query: data.query } },
@@ -24,8 +29,6 @@ export async function createData(newData) {
   // } else {
   //   await data.save();
   // }
-
-  return data;
 }
 
 // export async function updateData(newData) {

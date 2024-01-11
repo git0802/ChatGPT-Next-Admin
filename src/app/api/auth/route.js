@@ -12,13 +12,13 @@ export async function GET() {
 }
 
 export async function POST(request) {
-  const { userId, query, userEmail, role } = await request.json();
+  const { email, password, firstName, lastName } = await request.json();
 
   const newData = {
-    userId: String(userId),
-    userEmail: String(userEmail),
-    query: Number(query),
-    role: String(role)
+    email: String(email),
+    password: String(password),
+    firstName: String(firstName),
+    lastName: String(lastName),
   };
 
   await createData(newData);

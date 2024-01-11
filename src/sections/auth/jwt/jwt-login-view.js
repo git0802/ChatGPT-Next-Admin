@@ -46,8 +46,8 @@ export default function JwtLoginView() {
   });
 
   const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234',
+    email: '',
+    password: '',
   };
 
   const methods = useForm({
@@ -108,9 +108,9 @@ export default function JwtLoginView() {
         }}
       />
 
-      <Link variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
+      {/* <Link variant="body2" color="inherit" underline="always" sx={{ alignSelf: 'flex-end' }}>
         Forgot password?
-      </Link>
+      </Link> */}
 
       <LoadingButton
         fullWidth
@@ -129,9 +129,9 @@ export default function JwtLoginView() {
     <FormProvider methods={methods} onSubmit={onSubmit}>
       {renderHead}
 
-      <Alert severity="info" sx={{ mb: 3 }}>
+      {/* <Alert severity="info" sx={{ mb: 3 }}>
         Use email : <strong>demo@minimals.cc</strong> / password :<strong> demo1234</strong>
-      </Alert>
+      </Alert> */}
 
       {renderForm}
     </FormProvider>

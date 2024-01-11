@@ -63,7 +63,7 @@ export function AuthProvider({ children }) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const response = await axios.get(endpoints.auth.me);
+        const response = await axios.get(endpoints.auth);
 
         const { user } = response.data;
 
@@ -106,7 +106,7 @@ export function AuthProvider({ children }) {
       password,
     };
 
-    const response = await axios.post(endpoints.auth.login, data);
+    const response = await axios.post(endpoints.auth, data);
 
     const { accessToken, user } = response.data;
 
@@ -132,7 +132,7 @@ export function AuthProvider({ children }) {
       lastName,
     };
 
-    const response = await axios.post(endpoints.auth.register, data);
+    const response = await axios.post(endpoints.auth, data);
 
     const { accessToken, user } = response.data;
 

@@ -134,19 +134,21 @@ export function AuthProvider({ children }) {
 
     const response = await axios.post(endpoints.auth, data);
 
-    const { accessToken, user } = response.data;
+    const { status } = response.data;
 
-    sessionStorage.setItem(STORAGE_KEY, accessToken);
+    return status
 
-    dispatch({
-      type: 'REGISTER',
-      payload: {
-        user: {
-          ...user,
-          accessToken,
-        },
-      },
-    });
+    // sessionStorage.setItem(STORAGE_KEY, accessToken);
+
+    // dispatch({
+    //   type: 'REGISTER',
+    //   payload: {
+    //     user: {
+    //       ...user,
+    //       accessToken,
+    //     },
+    //   },
+    // });
   }, []);
 
   // LOGOUT

@@ -1,5 +1,6 @@
-import User from "src/models/userModel";
 import dbConnect from "src/utils/dbconnect";
+
+import User from "src/models/userModel";
 
 export async function getData() {
   // Fetch all data from the collection
@@ -13,19 +14,25 @@ export async function createData(newData) {
   // Create a new instance of the Data model and save it to the database
   await dbConnect();
   const data = new User(newData);
-  if (await User.findOne({ userEmail: data.userEmail })) {
-  } else {
-    await data.save();
-  }
+  const checkReg = await User.findOne({ userEmail: data.email });
+
+  if (!checkReg) await data.save();
+    // await User.updateOne(
+    //   { userEmail: data.userEmail },
+    //   { $set: { query: data.query } },
+    // );
+  // } else {
+  //   await data.save();
+  // }
 
   return data;
 }
 
-export async function updateData(newData) {
-  await dbConnect();
-  const data = new User(newData);
-  await User.updateOne(
-    { userEmail: data.userEmail },
-    { $set: { query: data.query } },
-  );
-}
+// export async function updateData(newData) {
+//   await dbConnect();
+//   const data = new User(newData);
+//   await User.updateOne(
+//     { userEmail: data.userEmail },
+//     { $set: { query: data.query } },
+//   );
+// }

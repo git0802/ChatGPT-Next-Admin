@@ -1,28 +1,38 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-import { createData, getData } from "./handlers";
+import { getData, createData } from "./handlers";
+
 export async function GET() {
   const data = await getData();
 
-  let json_response = {
-    data: data,
+  const json_response = {
+    data,
     status: "success",
   };
   return NextResponse.json(json_response);
 }
 
 export async function POST(request) {
-  const { email, password, firstName, lastName } = await request.json();
+  const inputData = await request.json();
+
+  const { email, password, firstName, lastName } = inputData;
+
+  // const newData = {
+  //   email: String(email),
+  //   password: String(password),
+  //   firstName: String(firstName),
+  //   lastName: String(lastName),
+  // };
 
   const newData = {
-    email: String(email),
-    password: String(password),
-    firstName: String(firstName),
-    lastName: String(lastName),
+    email, // Property shorthand used here
+    password, // Property shorthand used here
+    firstName, // Property shorthand used here
+    lastName, // Property shorthand used here
   };
 
   await createData(newData);
-  let json_response = {
+  const json_response = {
     status: "success",
   };
   return NextResponse.json(json_response);

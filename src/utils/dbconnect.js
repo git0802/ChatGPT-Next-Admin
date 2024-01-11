@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const { MONGODB_URI } = process.env; // Object destructuring
 
 if (!MONGODB_URI) {
   throw new Error(
@@ -8,6 +8,7 @@ if (!MONGODB_URI) {
   );
 }
 
+// eslint-disable-next-line prefer-const
 let cached = global.mongoose || { conn: null, promise: null };
 
 if (!cached.promise) {
@@ -15,9 +16,7 @@ if (!cached.promise) {
     bufferCommands: false,
   };
 
-  cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-    return mongoose;
-  });
+  cached.promise = mongoose.connect(MONGODB_URI, opts).then((m) => m); // Renamed mongoose to m & removed block
 }
 
 async function dbConnect() {

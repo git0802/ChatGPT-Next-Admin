@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose, { Schema } from "mongoose";
 
 const UserSchema = new Schema(
   {
@@ -10,6 +9,7 @@ const UserSchema = new Schema(
   },
   { timestamps: true },
 );
+
 const User =
   mongoose.models.tbl_admin_users || mongoose.model("tbl_admin_users", UserSchema);
 

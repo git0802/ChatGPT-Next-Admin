@@ -78,8 +78,12 @@ export default function UserNewEditForm({ currentUser }) {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
-      console.log("HHHHHH", data);
-      await axios.post("/api/user", data);
+      const agentData = {
+        userEmail: data.userEmail,
+        amount: data.amount,
+        status: "active"
+      }
+      await axios.post("/api/user", agentData);
       router.push(paths.dashboard.user.list);
       console.info('DATA', data);
     } catch (error) {

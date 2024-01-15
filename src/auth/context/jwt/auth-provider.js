@@ -63,7 +63,7 @@ export function AuthProvider({ children }) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const response = await axios.get(endpoints.auth);
+        const response = await axios.get(endpoints.auth.me);
 
         const { user } = response.data;
 
@@ -85,7 +85,6 @@ export function AuthProvider({ children }) {
         });
       }
     } catch (error) {
-      console.error(error);
       dispatch({
         type: 'INITIAL',
         payload: {
@@ -106,21 +105,25 @@ export function AuthProvider({ children }) {
       password,
     };
 
-    const response = await axios.post(endpoints.auth, data);
+    const response = await axios.post(endpoints.auth.login, data);
 
-    const { accessToken, user } = response.data;
+    const { accessToken, user, message } = response.data;
 
-    setSession(accessToken);
+    if (message == undefined) {
+      setSession(accessToken);
 
-    dispatch({
-      type: 'LOGIN',
-      payload: {
-        user: {
-          ...user,
-          accessToken,
+      dispatch({
+        type: 'LOGIN',
+        payload: {
+          user: {
+            ...user,
+            accessToken,
+          },
         },
-      },
-    });
+      });
+    }
+
+    return message;
   }, []);
 
   // REGISTER
@@ -132,23 +135,25 @@ export function AuthProvider({ children }) {
       lastName,
     };
 
-    const response = await axios.post(endpoints.auth, data);
+    const response = await axios.post(endpoints.auth.register, data);
 
-    const { status } = response.data;
+    const { accessToken, user, message } = response.data;
 
-    return status
+    if (message == undefined) {
+      sessionStorage.setItem(STORAGE_KEY, accessToken);
 
-    // sessionStorage.setItem(STORAGE_KEY, accessToken);
-
-    // dispatch({
-    //   type: 'REGISTER',
-    //   payload: {
-    //     user: {
-    //       ...user,
-    //       accessToken,
-    //     },
-    //   },
-    // });
+      dispatch({
+        type: 'REGISTER',
+        payload: {
+          user: {
+            ...user,
+            accessToken,
+          },
+        },
+      });
+    }    
+    
+    return message;
   }, []);
 
   // LOGOUT

@@ -4,20 +4,15 @@ import Image from "next/image";
 
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 
-import handleDelete from "./handleDelete";
-
 const TableThree = (props: any) => {
   let packageData: any = props.data;
 
-  const handleClick = (id: any) => {
-    handleDelete(id);
-  }
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="max-w-full overflow-x-auto">
         <table className="w-full table-auto">
           <thead>
-            <tr className="bg-gray-2 text-left dark:bg-meta-4">
+            <tr className="text-left bg-gray-2 dark:bg-meta-4">
               <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
                 Email
               </th>
@@ -27,7 +22,7 @@ const TableThree = (props: any) => {
               <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
                 Status
               </th>
-              <th className="py-4 px-4 font-medium text-black dark:text-white">
+              <th className="px-4 py-4 font-medium text-black dark:text-white">
                 Actions
               </th>
             </tr>
@@ -79,9 +74,7 @@ const TableThree = (props: any) => {
                     <button className="hover:text-primary">
                       <PencilSquareIcon width="18" height="18" />
                     </button>
-                    <button className="text-danger hover:text-primary" type="submit" onClick={() => {
-                      handleClick(packageItem.id)
-                    }}>
+                    <button className="text-danger hover:text-primary" type="submit" >
                       <TrashIcon width="18" height="18" />
                     </button>
                   </div>

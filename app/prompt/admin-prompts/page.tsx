@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 
 import AdminPromptTable from "@/components/Tables/AdminPromptTable";
 import axios from "axios";
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const AdminPromptsPage = () => {
-    const [packageData, setPackageData] = React.useState();
+    const [packageData, setPackageData] = useState();
 
     const fetchData = async () => {
         let { data } = await axios.get("/api/prompt");

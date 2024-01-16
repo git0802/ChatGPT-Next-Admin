@@ -1,5 +1,5 @@
 {
-  "name": "antd-demo",
+  "name": "tailadmin-free-nextjs",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,19 +9,31 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ant-design/nextjs-registry": "^1.0.0",
-    "antd": "^5.13.1",
-    "next": "14.0.4",
-    "react": "^18",
-    "react-dom": "^18"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
-    "postcss": "^8",
-    "tailwindcss": "^3.3.0",
-    "typescript": "^5"
+    "@clerk/backend": "^0.37.2",
+    "@clerk/nextjs": "^4.29.3",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@heroicons/react": "^2.1.1",
+    "@mui/icons-material": "^5.15.4",
+    "@mui/material": "^5.15.4",
+    "@react-jvectormap/core": "^1.0.4",
+    "@react-jvectormap/unitedstates": "^1.0.1",
+    "@types/node": "20.4.8",
+    "@types/react": "18.2.18",
+    "@types/react-dom": "18.2.7",
+    "apexcharts": "^3.41.1",
+    "autoprefixer": "10.4.14",
+    "eslint": "8.46.0",
+    "eslint-config-next": "13.4.12",
+    "jsvectormap": "^1.5.3",
+    "next": "13.4.12",
+    "postcss": "8.4.27",
+    "react": "18.2.0",
+    "react-apexcharts": "^1.4.1",
+    "react-dom": "18.2.0",
+    "react-jvectormap": "^0.0.16",
+    "react-no-ssr": "^1.1.0",
+    "tailwindcss": "3.3.3",
+    "typescript": "5.1.6"
   }
 }

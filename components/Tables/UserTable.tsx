@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Alert, Box, Dialog, DialogContent, DialogTitle, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import Stack from '@mui/material/Stack';
 
 import EditIcon from '@mui/icons-material/Edit';
@@ -11,7 +11,17 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function UserTable() {
-    const [packageData, setPackageData] = useState();
+
+    const [packageData, setPackageData] = useState<any[]>([]);
+    const [modalStatus, setModalStatus] = useState(false);
+
+    const USER_STATUS_OPTIONS = [
+        { value: 'unverified', label: 'Unverified' },
+        { value: 'verified', label: 'Verified' },
+        { value: 'transferable', label: 'Transferable' },
+        { value: 'failed', label: 'Failed' },
+        { value: 'expired', label: 'Expired' },
+      ];
 
     const getUserList =  async () => {
         try {
@@ -38,6 +48,10 @@ export default function UserTable() {
         }
     }
 
+    const handleModal = (status: boolean) => {
+        setModalStatus(status);
+    }
+
     useEffect(() => {
         getUserList();
     }, []);
@@ -46,6 +60,42 @@ export default function UserTable() {
 
     return (
         <>
+            <Dialog
+             fullWidth
+             maxWidth={false}
+             open={modalStatus}
+             onClose={() => handleModal(false)}
+             PaperProps={{
+                sx: { maxWidth: 720 },
+             }}
+            >
+                <DialogTitle>User Update</DialogTitle>
+
+                <DialogContent>
+                    <Alert variant="outlined" severity="info" sx={{ mb: 3 }}>
+                        Account is waiting for confirmation
+                    </Alert>
+
+                    <Box
+                        rowGap={3}
+                        columnGap={2}
+                        display="grid"
+                        gridTemplateColumns={{
+                        xs: 'repeat(1, 1fr)',
+                        sm: 'repeat(2, 1fr)',
+                        }}
+                    >
+                        <Select name="status" label="Status">
+                        {USER_STATUS_OPTIONS.map((status) => (
+                            <MenuItem key={status.value} value={status.value}>
+                            {status.label}
+                            </MenuItem>
+                        ))}
+                        </Select>
+                    </Box>
+                </DialogContent>
+            </Dialog>
+            
             <TableContainer component={Paper} className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
@@ -123,7 +173,7 @@ export default function UserTable() {
                            </TableCell>
                            <TableCell align="right">
                                <Stack direction="row" spacing={1}>
-                                    <IconButton color="primary">
+                                    <IconButton color="primary" onClick={() => handleModal(true)}>
                                         <EditIcon />
                                     </IconButton>
                                     <IconButton color="warning" onClick={() => deleteUser(packageItem.id)}>

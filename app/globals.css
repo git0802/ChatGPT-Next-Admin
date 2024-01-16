@@ -1,4 +1,4 @@
-@import url("https://fonts.cdnfonts.com/css/satoshi"); 
+@import url("https://fonts.cdnfonts.com/css/satoshi");
 
 @tailwind base;
 @tailwind components;
@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    @apply font-satoshi font-normal text-base text-body bg-whiten relative z-1;
+    @apply relative text-base font-normal font-satoshi text-body bg-whiten z-1;
   }
 }
 
@@ -117,7 +117,7 @@ span.flatpickr-weekday,
   @apply flex items-center justify-center w-7.5 h-7.5 rounded border border-stroke dark:border-strokedark hover:border-primary dark:hover:border-primary bg-white hover:bg-primary text-body hover:text-white dark:text-bodydark dark:hover:text-white text-2xl leading-none px-0 pt-0 pb-0.5;
 }
 .mapOne .jvm-zoom-btn {
-  @apply left-auto top-auto bottom-0;
+  @apply bottom-0 top-auto left-auto;
 }
 .mapOne .jvm-zoom-btn.jvm-zoomin {
   @apply right-10;
@@ -126,7 +126,7 @@ span.flatpickr-weekday,
   @apply right-0;
 }
 .mapTwo .jvm-zoom-btn {
-  @apply top-auto bottom-0;
+  @apply bottom-0 top-auto;
 }
 .mapTwo .jvm-zoom-btn.jvm-zoomin {
   @apply left-0;

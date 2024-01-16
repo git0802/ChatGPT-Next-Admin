@@ -4,7 +4,6 @@ import ChartOne from "@/components/Charts/ChartOne";
 import ChartThree from "@/components/Charts/ChartThree";
 import ChartTwo from "@/components/Charts/ChartTwo";
 import ChatCard from "@/components/Chat/ChatCard";
-import TableOne from "@/components/Tables/TableOne";
 import CardDataStats from "@/components/CardDataStats";
 // import Map from "../Maps/TestMap";
 
@@ -109,9 +108,6 @@ const ECommerce: React.FC = () => {
                 <ChartTwo />
                 <ChartThree />
                 <MapOne />
-                <div className="col-span-12 xl:col-span-8">
-                    <TableOne />
-                </div>
                 <ChatCard />
             </div>
         </>

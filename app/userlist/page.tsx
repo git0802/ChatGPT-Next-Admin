@@ -10,15 +10,13 @@ export const metadata: Metadata = {
 import { clerkClient } from '@clerk/nextjs';
 import UserTable from "@/components/Tables/UserTable";
 
-const UserListPage = async () => {
-    let packageData: any = await clerkClient.users.getUserList();
-
+const UserListPage = () => {
     return (
         <>
             <Breadcrumb pageName="User List" />
 
             <div className="flex flex-col gap-10">
-                <UserTable packageData={packageData} />
+                <UserTable />
             </div>
         </>
     );

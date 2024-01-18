@@ -43,8 +43,6 @@ export async function POST(req: NextRequest) {
   try {
     await dbConnect();
 
-    const data = new User(newData);
-
     const checkAvailable = await User.findOne({ userId });
 
     if (checkAvailable) {
@@ -55,8 +53,6 @@ export async function POST(req: NextRequest) {
 
       console.log(response.matchedCount + " document(s) matched");
       console.log(response.modifiedCount + " document(s) updated");
-
-      return NextResponse.json(response);
     }
 
     const response = await clerkClient.users.updateUser(userId, params);

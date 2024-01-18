@@ -13,7 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import CheckIcon from "@mui/icons-material/Check";
 import KeyIcon from "@mui/icons-material/Key";
@@ -35,6 +35,23 @@ const Settings = () => {
   const [helperText, setHelperText] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<boolean>();
+
+  const getData = async () => {
+    try {
+      const { data } = await axios.get("/api/setting");
+
+      const { apikey, limit } = data[0];
+
+      setApikey(apikey);
+      setLimit(limit);
+    } catch (error) {
+      console.error("Errors: ", error);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   const checkApikey = (apikey: any) => {
     if (!apikey) {

@@ -45,15 +45,6 @@ export default function UserTable() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [amount, setAmount] = useState<Number>();
-  const [userStatus, setUserStatus] = useState("");
-
-  const USER_STATUS_OPTIONS = [
-    { value: "unverified", label: "Unverified" },
-    { value: "verified", label: "Verified" },
-    { value: "transferable", label: "Transferable" },
-    { value: "failed", label: "Failed" },
-    { value: "expired", label: "Expired" },
-  ];
 
   const getUserList = async () => {
     try {

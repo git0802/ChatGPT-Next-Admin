@@ -2,9 +2,6 @@ import Image from "next/image";
 
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   IconButton,
   Paper,
   Table,
@@ -13,7 +10,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Typography,
 } from "@mui/material";
 import Stack from "@mui/material/Stack";
@@ -47,8 +43,6 @@ export default function AdminPromptTable() {
 
   const [promptId, setPromptId] = useState("");
   const [deletePromptId, setDeletePromptId] = useState("");
-
-  if (!packageData) return;
 
   const getPrompt = async () => {
     try {

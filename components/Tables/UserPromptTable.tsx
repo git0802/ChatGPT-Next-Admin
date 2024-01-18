@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import {
   Button,
   IconButton,
@@ -120,8 +118,6 @@ export default function UserPromptTable() {
   ) => {
     setUpdateContent(event.target.value);
   };
-
-  if (!packageData) return;
 
   useEffect(() => {
     getPrompt();

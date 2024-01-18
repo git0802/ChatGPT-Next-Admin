@@ -401,6 +401,19 @@
   dependencies:
     "@babel/runtime" "^7.23.7"
 
+"@mui/lab@^5.0.0-alpha.160":
+  version "5.0.0-alpha.160"
+  resolved "https://registry.yarnpkg.com/@mui/lab/-/lab-5.0.0-alpha.160.tgz#1e0ecfa28db57811697ca8177c53b67e66777da1"
+  integrity sha512-hMCOyjfpCHrb/ELs45baCHXICaZf3ygKY0R/phBKxxCxAX6V6Y3O9hxu2fS/Uw3LflZqUuv9TFkwVEWzq3OUkQ==
+  dependencies:
+    "@babel/runtime" "^7.23.7"
+    "@mui/base" "5.0.0-beta.31"
+    "@mui/system" "^5.15.4"
+    "@mui/types" "^7.2.13"
+    "@mui/utils" "^5.15.4"
+    clsx "^2.1.0"
+    prop-types "^15.8.1"
+
 "@mui/material@^5.15.4":
   version "5.15.4"
   resolved "https://registry.npmjs.org/@mui/material/-/material-5.15.4.tgz"

@@ -1,32 +1,94 @@
 import { clerkClient } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
-    try {
-        const response = await clerkClient.users.getUserList();
+import User from "@/models/userModel";
+import dbConnect from "@/lib/dbconnect";
 
-        return NextResponse.json(response);
-    } catch (error) {
-        console.error("Errors: ", error);
-        
-        return NextResponse.json(error);
-    }
+export async function GET() {
+  try {
+    await dbConnect();
+
+    const userData = await User.find({});
+
+    const response = await clerkClient.users.getUserList();
+
+    const data = {
+      response,
+      userData,
+    };
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error("Errors: ", error);
+
+    return NextResponse.json(error);
+  }
 }
 
-// export async function POST(params:type) {
-    
-// }
+export async function POST(req: NextRequest) {
+  const data = await req.json();
+
+  const { userId, firstName, lastName, amount } = data;
+
+  const params = {
+    firstName,
+    lastName,
+  };
+
+  const newData = {
+    userId,
+    amount,
+  };
+
+  try {
+    await dbConnect();
+
+    const data = new User(newData);
+
+    const checkAvailable = await User.findOne({ userId });
+
+    if (checkAvailable) {
+      const response = await User.updateOne(
+        { userId: newData.userId },
+        { $set: { amount: newData.amount } }
+      );
+
+      console.log(response.matchedCount + " document(s) matched");
+      console.log(response.modifiedCount + " document(s) updated");
+
+      return NextResponse.json(response);
+    }
+
+    const response = await clerkClient.users.updateUser(userId, params);
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error("Errors: ", error);
+
+    return NextResponse.json(error);
+  }
+}
 
 export async function DELETE(req: NextRequest) {
-    const { id } = await req.json();
-    
-    try {
-        const response = await clerkClient.users.deleteUser(id);
+  const { id } = await req.json();
 
-        return NextResponse.json(response);
-    } catch (error) {
-        console.error("Errors: ", error);
-        
-        return NextResponse.json(error);
+  try {
+    await dbConnect();
+
+    const checkAvailable = await User.findOne({ userId: id });
+
+    if (checkAvailable) {
+      const response = await User.deleteOne({ userId: id });
+
+      console.log("Deleted:", response.deletedCount);
     }
+
+    const response = await clerkClient.users.deleteUser(id);
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error("Errors: ", error);
+
+    return NextResponse.json(error);
+  }
 }

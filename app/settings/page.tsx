@@ -51,10 +51,12 @@ const Settings = () => {
     try {
       const { data } = await axios.get("/api/setting");
 
-      const { apikey, limit } = data[0];
-
-      setApikey(apikey);
-      setLimit(limit);
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].id === "default") {
+          setApikey(data[i].apikey);
+          setLimit(data[i].limit);
+        }
+      }
 
       handleBackdropClose();
     } catch (error) {

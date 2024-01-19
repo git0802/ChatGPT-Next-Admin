@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
 
     let result;
 
-    if (await Prompt.findOne({ id: data.id })) {
+    if (await Prompt.findOne({ id: newData.id })) {
       result = await Prompt.updateOne(
-        { id: data.id },
+        { id: newData.id },
         {
           $set: {
-            title: data.title,
-            content: data.content,
+            title: newData.title,
+            content: newData.content,
           },
         }
       );

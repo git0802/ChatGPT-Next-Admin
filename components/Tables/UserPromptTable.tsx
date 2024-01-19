@@ -19,6 +19,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import PromptDialog from "../Dialog/PromptDialog";
 import ConfirmDialog from "../Dialog/ConfirmDialog";
+import BackdropPage from "../Backdrop/Backdrop";
 
 export default function UserPromptTable() {
   const [packageData, setPackageData] = useState([]);
@@ -36,13 +37,25 @@ export default function UserPromptTable() {
   const [deleteModalStatus, setDeleteModalStatus] = useState(false);
 
   const [updateModalStatus, setUpdateModalStatus] = useState(false);
+  const [backdropOpen, setBackdropOpen] = useState<boolean>(false);
+
+  const handleBackdropClose = () => {
+    setBackdropOpen(false);
+  };
+
+  const handleBackdropOpen = () => {
+    setBackdropOpen(true);
+  };
 
   const getPrompt = async () => {
+    handleBackdropOpen();
     try {
       const { data } = await axios.get("/api/prompt");
       setPackageData(data);
+      handleBackdropClose();
     } catch (error) {
       console.error("Errors: ", error);
+      handleBackdropClose();
     }
   };
 
@@ -125,6 +138,8 @@ export default function UserPromptTable() {
 
   return (
     <>
+      <BackdropPage open={backdropOpen} handleClose={handleBackdropClose} />
+
       <PromptDialog
         dialogTitle="Update Prompt"
         buttonText="Update"

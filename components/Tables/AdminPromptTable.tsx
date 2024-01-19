@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import { nanoid } from "nanoid";
 import PromptDialog from "../Dialog/PromptDialog";
 import ConfirmDialog from "../Dialog/ConfirmDialog";
+import BackdropPage from "../Backdrop/Backdrop";
 
 export default function AdminPromptTable() {
   const [packageData, setPackageData] = useState([]);
@@ -43,13 +44,25 @@ export default function AdminPromptTable() {
 
   const [promptId, setPromptId] = useState("");
   const [deletePromptId, setDeletePromptId] = useState("");
+  const [backdropOpen, setBackdropOpen] = useState<boolean>(false);
+
+  const handleBackdropClose = () => {
+    setBackdropOpen(false);
+  };
+
+  const handleBackdropOpen = () => {
+    setBackdropOpen(true);
+  };
 
   const getPrompt = async () => {
+    handleBackdropOpen();
     try {
       const { data } = await axios.get("/api/prompt");
       setPackageData(data);
+      handleBackdropClose();
     } catch (error) {
       console.error("Errors: ", error);
+      handleBackdropClose();
     }
   };
 
@@ -180,6 +193,8 @@ export default function AdminPromptTable() {
 
   return (
     <>
+      <BackdropPage open={backdropOpen} handleClose={handleBackdropClose} />
+
       <PromptDialog
         dialogTitle="Create a new Prompt"
         buttonText="Create"

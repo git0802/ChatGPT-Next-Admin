@@ -29,6 +29,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import BackdropPage from "../Backdrop/Backdrop";
 
 export default function UserTable() {
   const [packageData, setPackageData] = useState<any[]>([]);
@@ -39,8 +40,18 @@ export default function UserTable() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [amount, setAmount] = useState<Number>();
+  const [backdropOpen, setBackdropOpen] = useState<boolean>(false);
+
+  const handleBackdropClose = () => {
+    setBackdropOpen(false);
+  };
+
+  const handleBackdropOpen = () => {
+    setBackdropOpen(true);
+  };
 
   const getUserList = async () => {
+    handleBackdropOpen();
     try {
       const { data } = await axios.get("/api/user");
 
@@ -83,9 +94,13 @@ export default function UserTable() {
       }
 
       setPackageData(resultData);
+
+      handleBackdropClose();
       return resultData;
     } catch (error) {
       console.error("Error: ", error);
+
+      handleBackdropClose();
     }
   };
 
@@ -180,6 +195,8 @@ export default function UserTable() {
 
   return (
     <>
+      <BackdropPage open={backdropOpen} handleClose={handleBackdropClose} />
+
       <Dialog
         fullWidth
         maxWidth={false}

@@ -18,8 +18,9 @@ import { useEffect, useState } from "react";
 import CheckIcon from "@mui/icons-material/Check";
 import KeyIcon from "@mui/icons-material/Key";
 import SaveIcon from "@mui/icons-material/Save";
-
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
+
+import BackdropPage from "@/components/Backdrop/Backdrop";
 
 import { LoadingButton } from "@mui/lab";
 
@@ -35,8 +36,18 @@ const Settings = () => {
   const [helperText, setHelperText] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<boolean>();
+  const [backdropOpen, setBackdropOpen] = useState<boolean>(false);
+
+  const handleBackdropClose = () => {
+    setBackdropOpen(false);
+  };
+
+  const handleBackdropOpen = () => {
+    setBackdropOpen(true);
+  };
 
   const getData = async () => {
+    handleBackdropOpen();
     try {
       const { data } = await axios.get("/api/setting");
 
@@ -44,8 +55,12 @@ const Settings = () => {
 
       setApikey(apikey);
       setLimit(limit);
+
+      handleBackdropClose();
     } catch (error) {
       console.error("Errors: ", error);
+
+      handleBackdropClose();
     }
   };
 
@@ -152,6 +167,8 @@ const Settings = () => {
   return (
     <>
       <Breadcrumb pageName="Settings" />
+
+      <BackdropPage open={backdropOpen} handleClose={handleBackdropClose} />
 
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}

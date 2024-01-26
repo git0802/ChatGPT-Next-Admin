@@ -20,7 +20,9 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const data = await req.json();
 
-  const { id, apikey, limit } = data;
+  const { id, apikey, mistralapikey, limit } = data;
+
+  console.log("Data", data);
 
   try {
     await dbConnect();
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
     if (checkable) {
       const response = await Setting.updateOne(
         { id },
-        { $set: { apikey, limit } }
+        { $set: { apikey: apikey, mistralapikey: mistralapikey, limit: limit } }
       );
 
       console.log(response.matchedCount + " document(s) matched");

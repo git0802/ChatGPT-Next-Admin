@@ -1,50 +1,49 @@
 "use client";
 
+import BackdropPage from "@/components/Backdrop/Backdrop";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 
 import {
   Alert,
-  Box,
   Button,
-  Grid,
+  IconButton,
   InputAdornment,
   Snackbar,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 
-import CheckIcon from "@mui/icons-material/Check";
 import KeyIcon from "@mui/icons-material/Key";
-import SaveIcon from "@mui/icons-material/Save";
-import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
+import DeleteIcon from "@mui/icons-material/Delete";
+// import DatasetIcon from "@mui/icons-material/Dataset";
 
-import BackdropPage from "@/components/Backdrop/Backdrop";
-
+import { useEffect, useState } from "react";
+import ApikeyDialog from "@/components/Dialog/ApikeyDialog";
+import axios from "axios";
 import { LoadingButton } from "@mui/lab";
 
-import axios from "axios";
+const Setting = () => {
+  const [openaiKey, setOpenaiKey] = useState("");
+  const [mistralKey, setMistralKey] = useState("");
+  const [limit, setLimit] = useState<Number>(0);
 
-const Settings = () => {
-  const [apikey, setApikey] = useState("");
-  const [validkey, setValidkey] = useState("");
-  const [limit, setLimit] = useState<Number>();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [statusError, setStatusError] = useState<boolean>();
-  const [limitError, setLimitError] = useState<boolean>();
-  const [helperText, setHelperText] = useState("");
-  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMessage, setSnackbarMessage] = useState<boolean>();
-  const [backdropOpen, setBackdropOpen] = useState<boolean>(false);
 
-  const handleBackdropClose = () => {
-    setBackdropOpen(false);
-  };
+  const [backdropStatus, setBackdropStatus] = useState<boolean>(false);
+  const [snackbarStatus, setSnackbarStatus] = useState<boolean>(false);
 
-  const handleBackdropOpen = () => {
-    setBackdropOpen(true);
-  };
+  const [openaiModalStatus, setOpenaiModalStatus] = useState<boolean>(false);
+  const [openaiEditModalStatus, setOpenaiEditModalStatus] =
+    useState<boolean>(false);
+
+  const [mistralModalStatus, setMistralModalStatus] = useState<boolean>(false);
+  const [mistralEditModalStatus, setMistralEditModalStatus] =
+    useState<boolean>(false);
+
+  const [limitError, setLimitError] = useState<boolean>();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getData = async () => {
     handleBackdropOpen();
@@ -53,99 +52,23 @@ const Settings = () => {
 
       for (let i = 0; i < data.length; i++) {
         if (data[i].id === "default") {
-          setApikey(data[i].apikey);
+          setOpenaiKey(data[i].apikey);
+          setMistralKey(data[i].mistralapikey);
           setLimit(data[i].limit);
         }
       }
 
+      console.log(data);
       handleBackdropClose();
     } catch (error) {
-      console.error("Errors: ", error);
-
+      console.error(error);
       handleBackdropClose();
     }
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const checkApikey = (apikey: any) => {
-    if (!apikey) {
-      setStatusError(true);
-      setHelperText("Please submit your OpenAI API Key");
-    } else {
-      fetch("https://api.openai.com/v1/engines", {
-        headers: {
-          Authorization: `Bearer ${apikey}`,
-        },
-      })
-        .then((response) => {
-          if (response.ok) {
-            console.log("API key is valid.");
-            setStatusError(false);
-            setHelperText("API key is valid.");
-            setValidkey(apikey);
-          } else {
-            console.error("API key is invalid or expired.");
-            setStatusError(true);
-            setHelperText("API key is invalid or expired.");
-          }
-        })
-        .catch((error) => {
-          console.error("Error checking API key:", error);
-          setStatusError(true);
-          setHelperText(`Error checking API key: ${error}`);
-        });
-    }
-  };
-
-  const handleCheck = () => {
-    checkApikey(apikey);
-  };
-
-  const handelSave = async () => {
-    if (!validkey) {
-      setStatusError(true);
-      setHelperText("Check your OpenAI API Key");
-      return;
-    }
-
-    if (!limit) {
-      setLimitError(true);
-      return;
-    }
-
-    setLoading(true);
-
-    const data = {
-      id: "default",
-      apikey,
-      limit,
-    };
-
-    try {
-      const response = await axios.post("/api/setting", data);
-
-      console.log("Response: ", response);
-
-      setSnackbarMessage(true);
-      handleSnackbarOpen();
-      setValidkey("");
-    } catch (error) {
-      console.error("Errors: ", error);
-
-      setSnackbarMessage(false);
-      handleSnackbarOpen();
-      setValidkey("");
-    }
-    setLoading(false);
-  };
-
-  const handleApikeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setStatusError(false);
-    setHelperText("");
-    setApikey(event.target.value);
+  const showKey = (key: string) => {
+    const truncatedKey = key.slice(0, 3) + "..." + key.slice(-4);
+    return truncatedKey;
   };
 
   const handleLimitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,129 +78,313 @@ const Settings = () => {
     if (!isNaN(valueAsNumber)) {
       setLimit(valueAsNumber);
     } else {
-      setLimit(undefined);
+      setLimit(0);
     }
   };
 
+  const handleLimitSet = async () => {
+    setIsLoading(true);
+    try {
+      const data = {
+        id: "default",
+        limit: limit,
+      };
+      const response = await axios.post("/api/setting", data);
+      setIsLoading(false);
+      setSnackbarMessage(true);
+      handleSnackbarOpen();
+
+      console.log("Response: ", response);
+    } catch (error) {
+      setIsLoading(false);
+      setSnackbarMessage(false);
+      handleSnackbarOpen();
+      console.error(error);
+    }
+  };
+
+  const handleOpenaikeyClear = async () => {
+    try {
+      const data = {
+        id: "default",
+        apikey: "",
+      };
+
+      const response = await axios.post("/api/setting", data);
+
+      setOpenaiKey("");
+      console.log("Response:", response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleMistralkeyClear = async () => {
+    try {
+      const data = {
+        id: "default",
+        mistralapikey: "",
+      };
+
+      const response = await axios.post("/api/setting", data);
+
+      setMistralKey("");
+      console.log("Response:", response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleBackdropClose = () => {
+    setBackdropStatus(false);
+  };
+
+  const handleBackdropOpen = () => {
+    setBackdropStatus(true);
+  };
+
   const handleSnackbarClose = () => {
-    setOpenSnackbar(false);
+    setSnackbarStatus(false);
   };
 
   const handleSnackbarOpen = () => {
-    setOpenSnackbar(true);
+    setSnackbarStatus(true);
   };
+
+  const handleOpenaiModalOpen = () => {
+    setOpenaiModalStatus(true);
+  };
+
+  const handleOpenaiModalClose = () => {
+    setOpenaiModalStatus(false);
+  };
+
+  const handleOpenaiEditModalOpen = () => {
+    setOpenaiEditModalStatus(true);
+  };
+
+  const handleOpenaiEditModalClose = () => {
+    setOpenaiEditModalStatus(false);
+  };
+
+  const handleMistralModalOpen = () => {
+    setMistralModalStatus(true);
+  };
+
+  const handleMistralModalClose = () => {
+    setMistralModalStatus(false);
+  };
+
+  const handleMistralEditModalOpen = () => {
+    setMistralEditModalStatus(true);
+  };
+
+  const handleMistralEditModalClose = () => {
+    setMistralEditModalStatus(false);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <>
-      <Breadcrumb pageName="Settings" />
+      <Breadcrumb pageName="Setting" />
 
-      <BackdropPage open={backdropOpen} handleClose={handleBackdropClose} />
+      <BackdropPage open={backdropStatus} handleClose={handleBackdropClose} />
 
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        open={openSnackbar}
-        autoHideDuration={5000}
+        open={snackbarStatus}
+        autoHideDuration={2000}
         onClose={handleSnackbarClose}
-        // message={snackbarMessage}
       >
         <Alert severity={snackbarMessage ? "success" : "warning"}>
           {snackbarMessage ? "Save Success!" : "Save faild!"}
         </Alert>
       </Snackbar>
 
+      <ApikeyDialog
+        open={openaiModalStatus}
+        onClose={handleOpenaiModalClose}
+        title="Set your OpenAI API Key"
+        apikey={openaiKey}
+        setApiKey={setOpenaiKey}
+        content="OpenAI"
+      />
+
+      <ApikeyDialog
+        open={openaiEditModalStatus}
+        onClose={handleOpenaiEditModalClose}
+        title="Edit your OpenAI API Key"
+        apikey={openaiKey}
+        setApiKey={setOpenaiKey}
+        content="OpenAI"
+      />
+
+      <ApikeyDialog
+        open={mistralModalStatus}
+        onClose={handleMistralModalClose}
+        title="Set your Mistral AI API Key"
+        apikey={mistralKey}
+        setApiKey={setMistralKey}
+        content="Mistral AI"
+      />
+
+      <ApikeyDialog
+        open={mistralEditModalStatus}
+        onClose={handleMistralEditModalClose}
+        title="Edit your Mistral AI API Key"
+        apikey={mistralKey}
+        setApiKey={setMistralKey}
+        content="Mistral AI"
+      />
+
       <div className="w-full gap-8">
         <div className="col-span-5 xl:col-span-3">
           <div className="bg-white border rounded-sm border-stroke shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="py-4 border-b border-stroke px-7 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
-                ChatGPT Default Values
+                Default Values Setting
               </h3>
             </div>
             <div className="p-7">
-              <Box sx={{ width: "100%" }}>
-                <Stack spacing={2}>
-                  <Stack spacing={1.5}>
-                    <Typography variant="subtitle2">OpenAI API Key</Typography>
-                    <Stack direction="row" spacing={2}>
+              <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                <div className="w-full sm:w-1/2 flex flex-col gap-5.5 ">
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ width: "350px" }}
+                  >
+                    <Stack>
+                      <Typography variant="subtitle1" gutterBottom>
+                        OpenAI API Key:
+                      </Typography>
+                    </Stack>
+                    <Stack>
+                      {!openaiKey ? (
+                        <>
+                          <Button
+                            type="submit"
+                            startIcon={<KeyIcon />}
+                            variant="contained"
+                            sx={{ width: "185px" }}
+                            onClick={handleOpenaiModalOpen}
+                          >
+                            Submit
+                          </Button>
+                        </>
+                      ) : (
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Typography variant="subtitle2" gutterBottom>
+                            {showKey(openaiKey)}
+                          </Typography>
+                          <IconButton onClick={handleOpenaikeyClear}>
+                            <DeleteIcon />
+                          </IconButton>
+                          <Button
+                            variant="contained"
+                            onClick={handleOpenaiEditModalOpen}
+                          >
+                            Edit
+                          </Button>
+                        </Stack>
+                      )}
+                    </Stack>
+                  </Stack>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ width: "350px" }}
+                  >
+                    <Stack>
+                      <Typography variant="subtitle1" gutterBottom>
+                        Mistral AI API Key:
+                      </Typography>
+                    </Stack>
+                    <Stack>
+                      {!mistralKey ? (
+                        <>
+                          <Button
+                            type="submit"
+                            startIcon={<KeyIcon />}
+                            variant="contained"
+                            sx={{ width: "185px" }}
+                            onClick={handleMistralModalOpen}
+                          >
+                            Submit
+                          </Button>
+                        </>
+                      ) : (
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Typography variant="subtitle2" gutterBottom>
+                            {showKey(mistralKey)}
+                          </Typography>
+                          <IconButton onClick={handleMistralkeyClear}>
+                            <DeleteIcon />
+                          </IconButton>
+                          <Button
+                            variant="contained"
+                            onClick={handleMistralEditModalOpen}
+                          >
+                            Edit
+                          </Button>
+                        </Stack>
+                      )}
+                    </Stack>
+                  </Stack>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ width: "350px" }}
+                  >
+                    <Stack>
+                      <Typography variant="subtitle1" gutterBottom>
+                        Free Tier Limit:
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" alignItems="center" spacing={1}>
                       <TextField
-                        value={apikey}
-                        id="openaikey"
+                        value={limit}
+                        type="number"
+                        id="limit"
                         variant="outlined"
-                        placeholder="Please submit your OpenAI API Key"
-                        onChange={handleApikeyChange}
+                        placeholder="Limits"
+                        onChange={handleLimitChange}
                         fullWidth
                         required
                         size="small"
-                        error={statusError}
-                        helperText={helperText ? helperText : ""}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <KeyIcon />
-                            </InputAdornment>
-                          ),
+                        error={limitError}
+                        helperText={
+                          limitError
+                            ? "Please submit free tier limits value"
+                            : ""
+                        }
+                        InputLabelProps={{
+                          shrink: true,
                         }}
+                        inputProps={{
+                          min: 0,
+                        }}
+                        sx={{ width: "113px" }}
                       />
-                      <Stack>
-                        <Button
-                          type="submit"
-                          startIcon={<CheckIcon />}
-                          variant="contained"
-                          onClick={handleCheck}
-                        >
-                          Check
-                        </Button>
-                      </Stack>
+                      <LoadingButton
+                        type="submit"
+                        // startIcon={<DatasetIcon />}
+                        variant="contained"
+                        loading={isLoading}
+                        onClick={handleLimitSet}
+                      >
+                        Set
+                      </LoadingButton>
                     </Stack>
                   </Stack>
-                  <Stack spacing={1.5}>
-                    <Typography variant="subtitle2">
-                      Free Tier Limits Value
-                    </Typography>
-                    <TextField
-                      value={limit}
-                      type="number"
-                      id="limit"
-                      variant="outlined"
-                      placeholder="Please submit free tier limits value"
-                      onChange={handleLimitChange}
-                      fullWidth
-                      required
-                      size="small"
-                      error={limitError}
-                      helperText={
-                        limitError ? "Please submit free tier limits value" : ""
-                      }
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <ProductionQuantityLimitsIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                      inputProps={{
-                        min: 0,
-                      }}
-                      sx={{ minWidth: "100px", width: "20%" }}
-                    />
-                  </Stack>
-                  <Stack alignItems="flex-end">
-                    <LoadingButton
-                      type="submit"
-                      loading={loading}
-                      loadingPosition="start"
-                      startIcon={<SaveIcon />}
-                      variant="contained"
-                      onClick={handelSave}
-                      sx={{ width: "fit-content" }}
-                    >
-                      Save
-                    </LoadingButton>
-                  </Stack>
-                </Stack>
-              </Box>
+                </div>
+                <div className="w-full sm:w-1/2 flex flex-row gap-5.5 items-center"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -286,4 +393,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default Setting;

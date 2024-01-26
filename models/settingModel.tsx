@@ -4,8 +4,9 @@ const Schema = mongoose.Schema;
 const SettingSchema = new Schema(
   {
     id: { type: String, required: true },
-    apikey: { type: String, required: true },
-    limit: { type: Number, required: true },
+    apikey: { type: String },
+    mistralapikey: { type: String },
+    limit: { type: Number },
   },
   { timestamps: true }
 );

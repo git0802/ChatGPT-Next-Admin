@@ -25,7 +25,7 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({
       </div>
 
       <div className="flex items-end justify-between mt-4">
-        <div className="w-full">
+        <div className="w-full max-w-44">
           {!total ? (
             <div>
               <div className="flex flex-row items-center justify-between">

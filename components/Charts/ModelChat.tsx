@@ -131,7 +131,7 @@ interface ChartOneState {
   }[];
 }
 
-const ChartOne: React.FC = () => {
+const ModelChat: React.FC = () => {
   const [state, setState] = useState<ChartOneState>({
     series: [
       {
@@ -163,22 +163,32 @@ const ChartOne: React.FC = () => {
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
         <div className="flex flex-wrap w-full gap-3 sm:gap-5">
-          <div className="flex min-w-47.5">
+          <div className="flex min-w-60">
             <span className="flex items-center justify-center w-full h-4 mt-1 mr-2 border rounded-full max-w-4 border-primary">
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-primary"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-primary">Total Revenue</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
+              <p className="font-semibold text-primary">GPT-4 Turbo Usage</p>
             </div>
           </div>
-          <div className="flex min-w-47.5">
+          <div className="flex min-w-60">
             <span className="flex items-center justify-center w-full h-4 mt-1 mr-2 border rounded-full max-w-4 border-secondary">
               <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-secondary"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-secondary">Total Sales</p>
-              <p className="text-sm font-medium">12.04.2022 - 12.05.2022</p>
+              <p className="font-semibold text-secondary">
+                GPT-3.5 Turbo Usage
+              </p>
+            </div>
+          </div>
+          <div className="flex min-w-60">
+            <span className="flex items-center justify-center w-full h-4 mt-1 mr-2 border border-yellow-500 rounded-full max-w-4">
+              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-yellow-400"></span>
+            </span>
+            <div className="w-full">
+              <p className="font-semibold text-yellow-400">
+                Mistral-Medium Usage
+              </p>
             </div>
           </div>
         </div>
@@ -199,4 +209,4 @@ const ChartOne: React.FC = () => {
   );
 };
 
-export default ChartOne;
+export default ModelChat;

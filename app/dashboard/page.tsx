@@ -1,117 +1,508 @@
 "use client";
-import React, { useState } from "react";
-import ChartOne from "@/components/Charts/ChartOne";
-import ChartThree from "@/components/Charts/ChartThree";
-import ChartTwo from "@/components/Charts/ChartTwo";
-import ChatCard from "@/components/Chat/ChatCard";
+import React, { useEffect, useState } from "react";
+import ModelChat from "@/components/Charts/ModelChat";
 import CardDataStats from "@/components/CardDataStats";
-// import Map from "../Maps/TestMap";
+import axios from "axios";
+import BackdropPage from "@/components/Backdrop/Backdrop";
 
-// without this the component renders on server and throws an error
-import dynamic from "next/dynamic";
-const MapOne = dynamic(() => import("@/components/Maps/MapOne"), {
-    ssr: false,
-});
+import PaymentsIcon from "@mui/icons-material/Payments";
 
 const ECommerce: React.FC = () => {
-    return (
-        <>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-                <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
-                    <svg
-                        className="fill-primary dark:fill-white"
-                        width="22"
-                        height="16"
-                        viewBox="0 0 22 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M11 15.1156C4.19376 15.1156 0.825012 8.61876 0.687512 8.34376C0.584387 8.13751 0.584387 7.86251 0.687512 7.65626C0.825012 7.38126 4.19376 0.918762 11 0.918762C17.8063 0.918762 21.175 7.38126 21.3125 7.65626C21.4156 7.86251 21.4156 8.13751 21.3125 8.34376C21.175 8.61876 17.8063 15.1156 11 15.1156ZM2.26876 8.00001C3.02501 9.27189 5.98126 13.5688 11 13.5688C16.0188 13.5688 18.975 9.27189 19.7313 8.00001C18.975 6.72814 16.0188 2.43126 11 2.43126C5.98126 2.43126 3.02501 6.72814 2.26876 8.00001Z"
-                            fill=""
-                        />
-                        <path
-                            d="M11 10.9219C9.38438 10.9219 8.07812 9.61562 8.07812 8C8.07812 6.38438 9.38438 5.07812 11 5.07812C12.6156 5.07812 13.9219 6.38438 13.9219 8C13.9219 9.61562 12.6156 10.9219 11 10.9219ZM11 6.625C10.2437 6.625 9.625 7.24375 9.625 8C9.625 8.75625 10.2437 9.375 11 9.375C11.7563 9.375 12.375 8.75625 12.375 8C12.375 7.24375 11.7563 6.625 11 6.625Z"
-                            fill=""
-                        />
-                    </svg>
-                </CardDataStats>
-                <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
-                    <svg
-                        className="fill-primary dark:fill-white"
-                        width="20"
-                        height="22"
-                        viewBox="0 0 20 22"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M11.7531 16.4312C10.3781 16.4312 9.27808 17.5312 9.27808 18.9062C9.27808 20.2812 10.3781 21.3812 11.7531 21.3812C13.1281 21.3812 14.2281 20.2812 14.2281 18.9062C14.2281 17.5656 13.0937 16.4312 11.7531 16.4312ZM11.7531 19.8687C11.2375 19.8687 10.825 19.4562 10.825 18.9406C10.825 18.425 11.2375 18.0125 11.7531 18.0125C12.2687 18.0125 12.6812 18.425 12.6812 18.9406C12.6812 19.4219 12.2343 19.8687 11.7531 19.8687Z"
-                            fill=""
-                        />
-                        <path
-                            d="M5.22183 16.4312C3.84683 16.4312 2.74683 17.5312 2.74683 18.9062C2.74683 20.2812 3.84683 21.3812 5.22183 21.3812C6.59683 21.3812 7.69683 20.2812 7.69683 18.9062C7.69683 17.5656 6.56245 16.4312 5.22183 16.4312ZM5.22183 19.8687C4.7062 19.8687 4.2937 19.4562 4.2937 18.9406C4.2937 18.425 4.7062 18.0125 5.22183 18.0125C5.73745 18.0125 6.14995 18.425 6.14995 18.9406C6.14995 19.4219 5.73745 19.8687 5.22183 19.8687Z"
-                            fill=""
-                        />
-                        <path
-                            d="M19.0062 0.618744H17.15C16.325 0.618744 15.6031 1.23749 15.5 2.06249L14.95 6.01562H1.37185C1.0281 6.01562 0.684353 6.18749 0.443728 6.46249C0.237478 6.73749 0.134353 7.11562 0.237478 7.45937C0.237478 7.49374 0.237478 7.49374 0.237478 7.52812L2.36873 13.9562C2.50623 14.4375 2.9531 14.7812 3.46873 14.7812H12.9562C14.2281 14.7812 15.3281 13.8187 15.5 12.5469L16.9437 2.26874C16.9437 2.19999 17.0125 2.16562 17.0812 2.16562H18.9375C19.35 2.16562 19.7281 1.82187 19.7281 1.37499C19.7281 0.928119 19.4187 0.618744 19.0062 0.618744ZM14.0219 12.3062C13.9531 12.8219 13.5062 13.2 12.9906 13.2H3.7781L1.92185 7.56249H14.7094L14.0219 12.3062Z"
-                            fill=""
-                        />
-                    </svg>
-                </CardDataStats>
-                <CardDataStats title="Total Product" total="2.450" rate="2.59%" levelUp>
-                    <svg
-                        className="fill-primary dark:fill-white"
-                        width="22"
-                        height="22"
-                        viewBox="0 0 22 22"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M21.1063 18.0469L19.3875 3.23126C19.2157 1.71876 17.9438 0.584381 16.3969 0.584381H5.56878C4.05628 0.584381 2.78441 1.71876 2.57816 3.23126L0.859406 18.0469C0.756281 18.9063 1.03128 19.7313 1.61566 20.3844C2.20003 21.0375 2.99066 21.3813 3.85003 21.3813H18.1157C18.975 21.3813 19.8 21.0031 20.35 20.3844C20.9 19.7656 21.2094 18.9063 21.1063 18.0469ZM19.2157 19.3531C18.9407 19.6625 18.5625 19.8344 18.15 19.8344H3.85003C3.43753 19.8344 3.05941 19.6625 2.78441 19.3531C2.50941 19.0438 2.37191 18.6313 2.44066 18.2188L4.12503 3.43751C4.19378 2.71563 4.81253 2.16563 5.56878 2.16563H16.4313C17.1532 2.16563 17.7719 2.71563 17.875 3.43751L19.5938 18.2531C19.6282 18.6656 19.4907 19.0438 19.2157 19.3531Z"
-                            fill=""
-                        />
-                        <path
-                            d="M14.3345 5.29375C13.922 5.39688 13.647 5.80938 13.7501 6.22188C13.7845 6.42813 13.8189 6.63438 13.8189 6.80625C13.8189 8.35313 12.547 9.625 11.0001 9.625C9.45327 9.625 8.1814 8.35313 8.1814 6.80625C8.1814 6.6 8.21577 6.42813 8.25015 6.22188C8.35327 5.80938 8.07827 5.39688 7.66577 5.29375C7.25327 5.19063 6.84077 5.46563 6.73765 5.87813C6.6689 6.1875 6.63452 6.49688 6.63452 6.80625C6.63452 9.2125 8.5939 11.1719 11.0001 11.1719C13.4064 11.1719 15.3658 9.2125 15.3658 6.80625C15.3658 6.49688 15.3314 6.1875 15.2626 5.87813C15.1595 5.46563 14.747 5.225 14.3345 5.29375Z"
-                            fill=""
-                        />
-                    </svg>
-                </CardDataStats>
-                <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
-                    <svg
-                        className="fill-primary dark:fill-white"
-                        width="22"
-                        height="18"
-                        viewBox="0 0 22 18"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <path
-                            d="M7.18418 8.03751C9.31543 8.03751 11.0686 6.35313 11.0686 4.25626C11.0686 2.15938 9.31543 0.475006 7.18418 0.475006C5.05293 0.475006 3.2998 2.15938 3.2998 4.25626C3.2998 6.35313 5.05293 8.03751 7.18418 8.03751ZM7.18418 2.05626C8.45605 2.05626 9.52168 3.05313 9.52168 4.29063C9.52168 5.52813 8.49043 6.52501 7.18418 6.52501C5.87793 6.52501 4.84668 5.52813 4.84668 4.29063C4.84668 3.05313 5.9123 2.05626 7.18418 2.05626Z"
-                            fill=""
-                        />
-                        <path
-                            d="M15.8124 9.6875C17.6687 9.6875 19.1468 8.24375 19.1468 6.42188C19.1468 4.6 17.6343 3.15625 15.8124 3.15625C13.9905 3.15625 12.478 4.6 12.478 6.42188C12.478 8.24375 13.9905 9.6875 15.8124 9.6875ZM15.8124 4.7375C16.8093 4.7375 17.5999 5.49375 17.5999 6.45625C17.5999 7.41875 16.8093 8.175 15.8124 8.175C14.8155 8.175 14.0249 7.41875 14.0249 6.45625C14.0249 5.49375 14.8155 4.7375 15.8124 4.7375Z"
-                            fill=""
-                        />
-                        <path
-                            d="M15.9843 10.0313H15.6749C14.6437 10.0313 13.6468 10.3406 12.7874 10.8563C11.8593 9.61876 10.3812 8.79376 8.73115 8.79376H5.67178C2.85303 8.82814 0.618652 11.0625 0.618652 13.8469V16.3219C0.618652 16.975 1.13428 17.4906 1.7874 17.4906H20.2468C20.8999 17.4906 21.4499 16.9406 21.4499 16.2875V15.4625C21.4155 12.4719 18.9749 10.0313 15.9843 10.0313ZM2.16553 15.9438V13.8469C2.16553 11.9219 3.74678 10.3406 5.67178 10.3406H8.73115C10.6562 10.3406 12.2374 11.9219 12.2374 13.8469V15.9438H2.16553V15.9438ZM19.8687 15.9438H13.7499V13.8469C13.7499 13.2969 13.6468 12.7469 13.4749 12.2313C14.0937 11.7844 14.8499 11.5781 15.6405 11.5781H15.9499C18.0812 11.5781 19.8343 13.3313 19.8343 15.4625V15.9438H19.8687Z"
-                            fill=""
-                        />
-                    </svg>
-                </CardDataStats>
-            </div>
+  const [backdropOpen, setBackdropOpen] = useState<boolean>(false);
+  // const [logs, setLogs] = useState([]);
+  const [gpt4Input, setGpt4Input] = useState(0);
+  const [gpt4Output, setGpt4Output] = useState(0);
+  const [gpt3Input, setGpt3Input] = useState(0);
+  const [gpt3Output, setGpt3Output] = useState(0);
+  const [mistralInput, setMistralInput] = useState(0);
+  const [mistralOutput, setMistralOutput] = useState(0);
+  const [totalCost, setTotalCost] = useState("");
 
-            <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-                <ChartOne />
-                <ChartTwo />
-                <ChartThree />
-                <MapOne />
-                <ChatCard />
-            </div>
-        </>
-    );
+  // function isToday(data: any) {
+  //   const today = new Date();
+  //   const date = new Date(data);
+  //   return (
+  //     date.getDate() === today.getDate() &&
+  //     date.getMonth() === today.getMonth() &&
+  //     date.getFullYear() === today.getFullYear()
+  //   );
+  // }
+
+  // function isWithinLastWeek(data: any) {
+  //   const now = new Date();
+  //   const date = new Date(data);
+  //   const oneWeekAgo = new Date(
+  //     now.getFullYear(),
+  //     now.getMonth(),
+  //     now.getDate() - 7
+  //   );
+
+  //   return date >= oneWeekAgo && date <= now;
+  // }
+
+  // function formatDate(date: any) {
+  //   return date.toISOString().split("T")[0];
+  // }
+
+  // function separateDataByDate(data: any) {
+  //   return data.reduce((acc: any, item: any) => {
+  //     if (isWithinLastWeek(item.createdAt)) {
+  //       const dateKey = formatDate(new Date(item.createdAt));
+  //       if (!acc[dateKey]) {
+  //         acc[dateKey] = [];
+  //       }
+  //       acc[dateKey].push(item);
+  //     }
+  //     return acc;
+  //   }, {});
+  // }
+
+  function isGpt4(data: any) {
+    return data === "gpt-4-1106-preview";
+  }
+
+  function isGpt3(data: any) {
+    return data === "gpt-3.5-turbo";
+  }
+
+  function isMistral(data: any) {
+    return data === "mistral-medium";
+  }
+
+  function isInput(data: any) {
+    return data === "input";
+  }
+
+  function isOutput(data: any) {
+    return data === "output";
+  }
+
+  function sumToken(data: any) {
+    let token = 0;
+    for (let i = 0; i < data.length; i++) {
+      token = token + data[i].token;
+    }
+
+    return token;
+  }
+
+  function getTotalCost(
+    gpt4Input: number,
+    gpt4Output: number,
+    gpt3Input: number,
+    gpt3Output: number,
+    mistralInput: number,
+    mistralOutput: number
+  ) {
+    const gpt4InputCost = gpt4Input * 0.01;
+    const gpt4OutputCost = gpt4Output * 0.03;
+
+    const gpt3InputCost = gpt3Input * 0.001;
+    const gpt3OutputCost = gpt3Output * 0.002;
+
+    const mistralInputCost = mistralInput * 2.5;
+    const mistralOutputCost = mistralOutput * 7.5;
+
+    const usd =
+      (gpt4InputCost + gpt4OutputCost + gpt3InputCost + gpt3OutputCost) / 1000;
+
+    const euro = (mistralInputCost + mistralOutputCost) / 1000000;
+
+    const total = (usd + euro * 1.08).toFixed(4);
+
+    return `$${total}`;
+  }
+
+  const getLogData = async () => {
+    handleBackdropOpen();
+    try {
+      const { data } = await axios.get("/api/usage");
+      // setLogs(data);
+
+      // const userData = new Set(data.map((item: any) => item.email));
+      // setUsers(userData);
+
+      // const today = data.filter((item: any) => isToday(item.createdAt));
+      // setTodayData(today);
+
+      // const lastWeeksData = data.filter((item: any) =>
+      //   isWithinLastWeek(item.createdAt)
+      // );
+      // setWeekData(lastWeeksData);
+
+      const gpt4Data = data.filter((item: any) => isGpt4(item.model));
+
+      const gpt4InputData = gpt4Data.filter((item: any) =>
+        isInput(item.methods)
+      );
+      const gpt4InputToken = sumToken(gpt4InputData);
+      setGpt4Input(gpt4InputToken);
+
+      const gpt4OutputData = gpt4Data.filter((item: any) =>
+        isOutput(item.methods)
+      );
+      const gpt4OutputToken = sumToken(gpt4OutputData);
+      setGpt4Output(gpt4OutputToken);
+      // const gpt4DatabyDate = separateDataByDate(gpt4Data);
+
+      const gpt3Data = data.filter((item: any) => isGpt3(item.model));
+      const gpt3InputData = gpt3Data.filter((item: any) =>
+        isInput(item.methods)
+      );
+      const gpt3InputToken = sumToken(gpt3InputData);
+      setGpt3Input(gpt3InputToken);
+
+      const gpt3OutputData = gpt3Data.filter((item: any) =>
+        isOutput(item.methods)
+      );
+      const gpt3OutputToken = sumToken(gpt3OutputData);
+      setGpt3Output(gpt3OutputToken);
+      // const gpt3DatabyDate = separateDataByDate(gpt3Data);
+
+      const mistralData = data.filter((item: any) => isMistral(item.model));
+      const mistralInputData = mistralData.filter((item: any) =>
+        isInput(item.methods)
+      );
+      const mistralInputToken = sumToken(mistralInputData);
+      setMistralInput(mistralInputToken);
+
+      const mistralOutputData = mistralData.filter((item: any) =>
+        isOutput(item.methods)
+      );
+      const mistralOutputToken = sumToken(mistralOutputData);
+      setMistralOutput(mistralOutputToken);
+      // const mistralDatabyDate = separateDataByDate(mistralData);
+
+      const total = getTotalCost(
+        gpt4InputToken,
+        gpt4OutputToken,
+        gpt3InputToken,
+        gpt3OutputToken,
+        mistralInputToken,
+        mistralOutputToken
+      );
+      setTotalCost(total);
+
+      handleBackdropClose();
+    } catch (error) {
+      console.error(error);
+      handleBackdropClose();
+    }
+  };
+
+  const handleBackdropClose = () => {
+    setBackdropOpen(false);
+  };
+
+  const handleBackdropOpen = () => {
+    setBackdropOpen(true);
+  };
+
+  useEffect(() => {
+    getLogData();
+  }, []);
+
+  return (
+    <>
+      <BackdropPage open={backdropOpen} handleClose={handleBackdropClose} />
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+        <CardDataStats
+          title="GPT-4 Turbo Token"
+          input={gpt4Input}
+          output={gpt4Output}
+        >
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+              width="24"
+              height="24"
+              viewBox="0 0 43 44"
+              fill="none"
+            >
+              <defs>
+                <rect
+                  id="path_0"
+                  x="0"
+                  y="0"
+                  width="43"
+                  height="43.580135196270106"
+                />
+              </defs>
+              <g
+                opacity="1"
+                transform="translate(0 0.000001981943071882597)  rotate(0 21.5 21.790067598135053)"
+              >
+                <mask id="bg-mask-0" fill="white">
+                  <use xlinkHref="#path_0"></use>
+                </mask>
+                <g mask="url(#bg-mask-0)">
+                  <path
+                    id="分组 1"
+                    fillRule="evenodd"
+                    style={{
+                      fill: "#1976d2",
+                      transform:
+                        "translate(0 0) rotate(0 21.5 21.790067598135053)",
+                    }}
+                    d="M40.17 17.84L40.17 17.84C40.53 16.73 40.72 15.57 40.72 14.41C40.72 12.48 40.21 10.58 39.23 8.92C37.27 5.51 33.64 3.41 29.71 3.41C28.94 3.41 28.16 3.49 27.41 3.65C25.35 1.33 22.39 0 19.29 0L19.22 0L19.19 0C14.43 0 10.21 3.07 8.74 7.6C5.68 8.23 3.03 10.15 1.48 12.87C0.51 14.54 0 16.45 0 18.38C0 21.1 1.01 23.73 2.83 25.74C2.47 26.85 2.28 28.01 2.28 29.17C2.28 31.1 2.79 33 3.77 34.66C6.14 38.8 10.92 40.93 15.59 39.93C17.65 42.25 20.61 43.58 23.71 43.58L23.78 43.58L23.81 43.58C28.57 43.58 32.8 40.51 34.26 35.97C37.33 35.35 39.97 33.43 41.52 30.71C42.49 29.03 43 27.13 43 25.2C43 22.48 41.99 19.86 40.17 17.84Z M18.817 38.6948C18.727 38.7448 18.647 38.7948 18.557 38.8448C20.017 40.0648 21.867 40.7348 23.777 40.7348L23.787 40.7348C28.287 40.7248 31.937 37.0648 31.947 32.5648L31.947 22.4348C31.937 22.3848 31.907 22.3548 31.877 22.3348L28.207 20.2148L28.207 32.4548C28.207 32.9648 27.937 33.4348 27.487 33.6848L18.817 38.6948Z M17.3932 36.223L26.1632 31.163C26.2032 31.133 26.2232 31.093 26.2232 31.053L26.2132 31.053L26.2132 26.813L15.6232 32.933C15.1832 33.183 14.6432 33.183 14.2032 32.933L5.52317 27.923C5.44317 27.873 5.32317 27.803 5.26317 27.763C5.18317 28.223 5.14317 28.693 5.14317 29.163C5.14317 30.593 5.52317 31.993 6.23317 33.233L6.23317 33.233C7.70317 35.763 10.3932 37.313 13.3132 37.313C14.7432 37.313 16.1532 36.943 17.3932 36.223Z M8.20584 11.013C8.20584 10.923 8.20584 10.783 8.20584 10.713C6.41583 11.373 4.90584 12.643 3.95583 14.293L3.95583 14.293C3.24583 15.533 2.86583 16.943 2.86583 18.373C2.86583 21.293 4.41583 23.983 6.94584 25.443L15.7158 30.513C15.7558 30.533 15.8058 30.533 15.8358 30.503L19.5058 28.383L8.91584 22.273C8.47583 22.023 8.20584 21.553 8.20584 21.043L8.20584 21.033L8.20584 11.013Z M36.0546 18.1303L27.2846 13.0603C27.2446 13.0403 27.1946 13.0503 27.1646 13.0703L23.4946 15.1903L34.0846 21.3103C34.5246 21.5603 34.7946 22.0203 34.7946 22.5303C34.7946 22.5303 34.7946 22.5403 34.7946 22.5403L34.7946 32.8603C38.0046 31.6803 40.1446 28.6203 40.1446 25.2003C40.1446 22.2803 38.5846 19.5903 36.0546 18.1303Z M16.8345 12.4124C16.8045 12.4424 16.7845 12.4824 16.7845 12.5224L16.7845 12.5224L16.7845 16.7624L27.3745 10.6424C27.5945 10.5224 27.8445 10.4524 28.0945 10.4524C28.3445 10.4524 28.5845 10.5224 28.8045 10.6424L37.4845 15.6624C37.5645 15.7124 37.6545 15.7624 37.7345 15.8124L37.7345 15.8124C37.8145 15.3524 37.8545 14.8924 37.8545 14.4324C37.8545 9.92236 34.1945 6.26236 29.6845 6.26236C28.2545 6.26236 26.8545 6.64236 25.6045 7.35236L16.8345 12.4124Z M19.2209 2.84925C14.7109 2.84925 11.0509 6.49925 11.0509 11.0093L11.0509 21.1393C11.0609 21.1893 11.0809 21.2193 11.1209 21.2393L14.7909 23.3593L14.8009 11.1293L14.8009 11.1193C14.8009 10.6193 15.0709 10.1493 15.5109 9.89925L24.1909 4.88925C24.2609 4.83925 24.3809 4.77925 24.4409 4.73925C22.9809 3.51925 21.1309 2.84925 19.2209 2.84925Z M16.783 24.5101L21.503 27.2401L26.223 24.5101L26.223 19.0601L21.503 16.3401L16.783 19.0701L16.783 24.5101Z "
+                  />
+                </g>
+              </g>
+            </svg>
+          </div>
+        </CardDataStats>
+        <CardDataStats
+          title="GPT-3.5 Turbo Token"
+          input={gpt3Input}
+          output={gpt3Output}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+            width="24"
+            height="24"
+            viewBox="0 0 43 44"
+            fill="none"
+          >
+            <defs>
+              <rect
+                id="path_0"
+                x="0"
+                y="0"
+                width="43"
+                height="43.580135196270106"
+              />
+            </defs>
+            <g
+              opacity="1"
+              transform="translate(0 0.000001981943071882597)  rotate(0 21.5 21.790067598135053)"
+            >
+              <mask id="bg-mask-0" fill="white">
+                <use xlinkHref="#path_0"></use>
+              </mask>
+              <g mask="url(#bg-mask-0)">
+                <path
+                  id="分组 1"
+                  fillRule="evenodd"
+                  style={{
+                    fill: "#9c27b0",
+                    transform:
+                      "translate(0 0) rotate(0 21.5 21.790067598135053)",
+                  }}
+                  d="M40.17 17.84L40.17 17.84C40.53 16.73 40.72 15.57 40.72 14.41C40.72 12.48 40.21 10.58 39.23 8.92C37.27 5.51 33.64 3.41 29.71 3.41C28.94 3.41 28.16 3.49 27.41 3.65C25.35 1.33 22.39 0 19.29 0L19.22 0L19.19 0C14.43 0 10.21 3.07 8.74 7.6C5.68 8.23 3.03 10.15 1.48 12.87C0.51 14.54 0 16.45 0 18.38C0 21.1 1.01 23.73 2.83 25.74C2.47 26.85 2.28 28.01 2.28 29.17C2.28 31.1 2.79 33 3.77 34.66C6.14 38.8 10.92 40.93 15.59 39.93C17.65 42.25 20.61 43.58 23.71 43.58L23.78 43.58L23.81 43.58C28.57 43.58 32.8 40.51 34.26 35.97C37.33 35.35 39.97 33.43 41.52 30.71C42.49 29.03 43 27.13 43 25.2C43 22.48 41.99 19.86 40.17 17.84Z M18.817 38.6948C18.727 38.7448 18.647 38.7948 18.557 38.8448C20.017 40.0648 21.867 40.7348 23.777 40.7348L23.787 40.7348C28.287 40.7248 31.937 37.0648 31.947 32.5648L31.947 22.4348C31.937 22.3848 31.907 22.3548 31.877 22.3348L28.207 20.2148L28.207 32.4548C28.207 32.9648 27.937 33.4348 27.487 33.6848L18.817 38.6948Z M17.3932 36.223L26.1632 31.163C26.2032 31.133 26.2232 31.093 26.2232 31.053L26.2132 31.053L26.2132 26.813L15.6232 32.933C15.1832 33.183 14.6432 33.183 14.2032 32.933L5.52317 27.923C5.44317 27.873 5.32317 27.803 5.26317 27.763C5.18317 28.223 5.14317 28.693 5.14317 29.163C5.14317 30.593 5.52317 31.993 6.23317 33.233L6.23317 33.233C7.70317 35.763 10.3932 37.313 13.3132 37.313C14.7432 37.313 16.1532 36.943 17.3932 36.223Z M8.20584 11.013C8.20584 10.923 8.20584 10.783 8.20584 10.713C6.41583 11.373 4.90584 12.643 3.95583 14.293L3.95583 14.293C3.24583 15.533 2.86583 16.943 2.86583 18.373C2.86583 21.293 4.41583 23.983 6.94584 25.443L15.7158 30.513C15.7558 30.533 15.8058 30.533 15.8358 30.503L19.5058 28.383L8.91584 22.273C8.47583 22.023 8.20584 21.553 8.20584 21.043L8.20584 21.033L8.20584 11.013Z M36.0546 18.1303L27.2846 13.0603C27.2446 13.0403 27.1946 13.0503 27.1646 13.0703L23.4946 15.1903L34.0846 21.3103C34.5246 21.5603 34.7946 22.0203 34.7946 22.5303C34.7946 22.5303 34.7946 22.5403 34.7946 22.5403L34.7946 32.8603C38.0046 31.6803 40.1446 28.6203 40.1446 25.2003C40.1446 22.2803 38.5846 19.5903 36.0546 18.1303Z M16.8345 12.4124C16.8045 12.4424 16.7845 12.4824 16.7845 12.5224L16.7845 12.5224L16.7845 16.7624L27.3745 10.6424C27.5945 10.5224 27.8445 10.4524 28.0945 10.4524C28.3445 10.4524 28.5845 10.5224 28.8045 10.6424L37.4845 15.6624C37.5645 15.7124 37.6545 15.7624 37.7345 15.8124L37.7345 15.8124C37.8145 15.3524 37.8545 14.8924 37.8545 14.4324C37.8545 9.92236 34.1945 6.26236 29.6845 6.26236C28.2545 6.26236 26.8545 6.64236 25.6045 7.35236L16.8345 12.4124Z M19.2209 2.84925C14.7109 2.84925 11.0509 6.49925 11.0509 11.0093L11.0509 21.1393C11.0609 21.1893 11.0809 21.2193 11.1209 21.2393L14.7909 23.3593L14.8009 11.1293L14.8009 11.1193C14.8009 10.6193 15.0709 10.1493 15.5109 9.89925L24.1909 4.88925C24.2609 4.83925 24.3809 4.77925 24.4409 4.73925C22.9809 3.51925 21.1309 2.84925 19.2209 2.84925Z M16.783 24.5101L21.503 27.2401L26.223 24.5101L26.223 19.0601L21.503 16.3401L16.783 19.0701L16.783 24.5101Z "
+                />
+              </g>
+            </g>
+          </svg>
+        </CardDataStats>
+        <CardDataStats
+          title="Mistral-Medium Token"
+          input={mistralInput}
+          output={mistralOutput}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 256 233"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid"
+          >
+            <title>Mistral AI</title>
+            <g>
+              <rect
+                fill="#000000"
+                x="186.181818"
+                y="0"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#F7D046"
+                x="209.454545"
+                y="0"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#000000"
+                x="0"
+                y="0"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#000000"
+                x="0"
+                y="46.5454545"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#000000"
+                x="0"
+                y="93.0909091"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#000000"
+                x="0"
+                y="139.636364"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#000000"
+                x="0"
+                y="186.181818"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#F7D046"
+                x="23.2727273"
+                y="0"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#F2A73B"
+                x="209.454545"
+                y="46.5454545"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#F2A73B"
+                x="23.2727273"
+                y="46.5454545"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#000000"
+                x="139.636364"
+                y="46.5454545"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#F2A73B"
+                x="162.909091"
+                y="46.5454545"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#F2A73B"
+                x="69.8181818"
+                y="46.5454545"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#EE792F"
+                x="116.363636"
+                y="93.0909091"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#EE792F"
+                x="162.909091"
+                y="93.0909091"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#EE792F"
+                x="69.8181818"
+                y="93.0909091"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#000000"
+                x="93.0909091"
+                y="139.636364"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#EB5829"
+                x="116.363636"
+                y="139.636364"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#EE792F"
+                x="209.454545"
+                y="93.0909091"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#EE792F"
+                x="23.2727273"
+                y="93.0909091"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#000000"
+                x="186.181818"
+                y="139.636364"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#EB5829"
+                x="209.454545"
+                y="139.636364"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#000000"
+                x="186.181818"
+                y="186.181818"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#EB5829"
+                x="23.2727273"
+                y="139.636364"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#EA3326"
+                x="209.454545"
+                y="186.181818"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+              <rect
+                fill="#EA3326"
+                x="23.2727273"
+                y="186.181818"
+                width="46.5454545"
+                height="46.5454545"
+              ></rect>
+            </g>
+          </svg>
+        </CardDataStats>
+        <CardDataStats title="Total Cost" total={totalCost}>
+          <PaymentsIcon color="success" />
+        </CardDataStats>
+      </div>
+    </>
+  );
 };
 
 export default ECommerce;

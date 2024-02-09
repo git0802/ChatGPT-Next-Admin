@@ -60,6 +60,7 @@ export default function UserTable() {
       interface ResultItemType {
         userId: string; // or number, depending on your ID type
         email: string;
+        phone: string;
         imageUrl: string;
         firstName: string;
         lastName: string;
@@ -77,12 +78,14 @@ export default function UserTable() {
             const lastName = response[j].lastName;
             const amount = userData[i].amount;
             const email = response[j].emailAddresses[0].emailAddress;
+            const phone = response[j].phoneNumbers[0]?.phoneNumber;
             const status = response[j].emailAddresses[0].verification?.status;
             const imageUrl = response[j].imageUrl;
 
             resultData.push({
               userId,
               email,
+              phone,
               imageUrl,
               firstName,
               lastName,
@@ -276,6 +279,9 @@ export default function UserTable() {
                 </Typography>
               </TableCell>
               <TableCell className="text-black dark:text-white" align="left">
+                <Typography variant="subtitle1">Phone Number</Typography>
+              </TableCell>
+              <TableCell className="text-black dark:text-white" align="left">
                 <Typography variant="subtitle1">Amount</Typography>
               </TableCell>
               <TableCell className="text-black dark:text-white" align="left">
@@ -324,12 +330,20 @@ export default function UserTable() {
                       </div>
                       <Typography
                         className="text-black dark:text-white"
-                        variant="caption"
+                        variant="subtitle2"
                       >
                         {packageItem.email}
                       </Typography>
                     </div>
                   </div>
+                </TableCell>
+                <TableCell align="left">
+                  <Typography
+                    className="text-black dark:text-white"
+                    variant="subtitle2"
+                  >
+                    {packageItem.phone}
+                  </Typography>
                 </TableCell>
                 <TableCell align="left">
                   <Typography

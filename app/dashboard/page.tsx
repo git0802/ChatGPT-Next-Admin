@@ -11,7 +11,7 @@ import BasicDateRangePicker from "@/components/DataRangePicker";
 
 const ECommerce: React.FC = () => {
   const [backdropOpen, setBackdropOpen] = useState<boolean>(false);
-  // const [logs, setLogs] = useState([]);
+  const [logs, setLogs] = useState<any>([]);
   const [gpt4Input, setGpt4Input] = useState(0);
   const [gpt4Output, setGpt4Output] = useState(0);
   const [gpt3Input, setGpt3Input] = useState(0);
@@ -44,6 +44,12 @@ const ECommerce: React.FC = () => {
   //     now.getMonth(),
   //     now.getDate() - 7
   //   );
+
+  function isWithinDate(date: Date, startDate: Date, endDate: Date) {
+    const Currentdate = new Date(date);
+
+    return Currentdate >= startDate && Currentdate <= endDate;
+  }
 
   //   return date >= oneWeekAgo && date <= now;
   // }
@@ -229,7 +235,7 @@ const ECommerce: React.FC = () => {
       // );
       // setWeekData(lastWeeksData);
 
-      const gpt4Data = data.filter((item: any) => isGpt4(item.model));
+      const gpt4Data = logs.filter((item: any) => isGpt4(item.model));
 
       const gpt4InputData = gpt4Data.filter((item: any) =>
         isInput(item.methods)
@@ -244,7 +250,7 @@ const ECommerce: React.FC = () => {
       setGpt4Output(gpt4OutputToken);
       // const gpt4DatabyDate = separateDataByDate(gpt4Data);
 
-      const gpt3Data = data.filter((item: any) => isGpt3(item.model));
+      const gpt3Data = logs.filter((item: any) => isGpt3(item.model));
       const gpt3InputData = gpt3Data.filter((item: any) =>
         isInput(item.methods)
       );
@@ -258,7 +264,7 @@ const ECommerce: React.FC = () => {
       setGpt3Output(gpt3OutputToken);
       // const gpt3DatabyDate = separateDataByDate(gpt3Data);
 
-      const mistralData = data.filter((item: any) => isMistral(item.model));
+      const mistralData = logs.filter((item: any) => isMistral(item.model));
       const mistralInputData = mistralData.filter((item: any) =>
         isInput(item.methods)
       );
@@ -283,13 +289,13 @@ const ECommerce: React.FC = () => {
 
       setTotalCost(total);
 
-      const date = getInitialDate(data);
+      const date = getInitialDate(logs);
       const today = new Date();
 
       setMinDate(date);
       setMaxDate(today);
 
-      tokenArray(data);
+      tokenArray(logs);
 
       handleBackdropClose();
     } catch (error) {
@@ -308,14 +314,18 @@ const ECommerce: React.FC = () => {
 
   useEffect(() => {
     getLogData();
-  }, []);
+  }, [logs]);
 
   return (
     <>
       <BackdropPage open={backdropOpen} handleClose={handleBackdropClose} />
 
       <div className="flex w-full gap-4 my-5">
-        <BasicDateRangePicker minDate={minDate} />
+        <BasicDateRangePicker
+          minDate={minDate}
+          maxDate={maxDate}
+          setLogs={setLogs}
+        />
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-2 2xl:gap-7.5 w-full">
           <CardDataStats

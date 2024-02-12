@@ -28,7 +28,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const data = await req.json();
 
-  const { userId, firstName, lastName, amount } = data;
+  const { userId, firstName, lastName, amount, statusOne } = data;
 
   const params = {
     firstName,
@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
   const newData = {
     userId,
     amount,
+    statusOne,
   };
 
   try {
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
     if (checkAvailable) {
       const response = await User.updateOne(
         { userId: newData.userId },
-        { $set: { amount: newData.amount } }
+        { $set: { amount: newData.amount, status: newData.statusOne } }
       );
 
       console.log(response.matchedCount + " document(s) matched");

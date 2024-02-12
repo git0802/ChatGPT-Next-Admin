@@ -10,8 +10,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
+  SelectChangeEvent,
   Table,
   TableBody,
   TableCell,
@@ -41,6 +46,7 @@ export default function UserTable() {
   const [lastName, setLastName] = useState("");
   const [amount, setAmount] = useState<Number>();
   const [backdropOpen, setBackdropOpen] = useState<boolean>(false);
+  const [statusOne, setStatusOne] = useState("");
 
   const handleBackdropClose = () => {
     setBackdropOpen(false);
@@ -60,6 +66,7 @@ export default function UserTable() {
       interface ResultItemType {
         userId: string; // or number, depending on your ID type
         email: string;
+        phone: string;
         imageUrl: string;
         firstName: string;
         lastName: string;
@@ -77,12 +84,14 @@ export default function UserTable() {
             const lastName = response[j].lastName;
             const amount = userData[i].amount;
             const email = response[j].emailAddresses[0].emailAddress;
-            const status = response[j].emailAddresses[0].verification?.status;
+            const phone = response[j].phoneNumbers[0]?.phoneNumber;
+            const status = userData[i].status;
             const imageUrl = response[j].imageUrl;
 
             resultData.push({
               userId,
               email,
+              phone,
               imageUrl,
               firstName,
               lastName,
@@ -125,9 +134,9 @@ export default function UserTable() {
         userId,
         firstName,
         lastName,
+        statusOne,
         amount,
       };
-      console.log("HHHH", data);
 
       const response: any = await axios.post("/api/user", data);
       console.log("Response: ", response);
@@ -142,17 +151,20 @@ export default function UserTable() {
   };
 
   const handleModal = (props: any) => {
-    console.log("User: ", props);
-
     const userId = props.userId;
     const firstName = props.firstName;
     const lastName = props.lastName;
     const amount = props.amount;
+    const status = props.status;
 
     setUserId(userId);
     setFirstName(firstName);
     setLastName(lastName);
-    setAmount(amount);
+    setStatusOne(status);
+
+    if (status === "free") {
+      setAmount(amount);
+    }
 
     openModal();
   };
@@ -193,6 +205,10 @@ export default function UserTable() {
 
   if (!packageData) return;
 
+  const handleStatusChange = (event: SelectChangeEvent) => {
+    setStatusOne(event.target.value);
+  };
+
   return (
     <>
       <BackdropPage open={backdropOpen} handleClose={handleBackdropClose} />
@@ -203,7 +219,7 @@ export default function UserTable() {
         open={modalStatus}
         onClose={closeModal}
         PaperProps={{
-          sx: { maxWidth: 500 },
+          sx: { maxWidth: 380 },
         }}
       >
         <DialogTitle>User Update</DialogTitle>
@@ -227,23 +243,41 @@ export default function UserTable() {
               name="firstName"
               label="First Name"
               onChange={handleFirstNameChange}
+              size="small"
             />
             <TextField
               value={lastName}
               name="lastName"
               label="Last Name"
               onChange={handleLastNameChange}
+              size="small"
             />
-            <TextField
-              value={amount}
-              name="amount"
-              label="Amount"
-              type="number"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              onChange={handleAmountNameChange}
-            />
+            <FormControl size="small">
+              <InputLabel sx={{ width: "100px" }}>Status</InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={statusOne}
+                label="Status"
+                onChange={handleStatusChange}
+              >
+                <MenuItem value="premium">PREMIUM</MenuItem>
+                <MenuItem value="free">FREE</MenuItem>
+              </Select>
+            </FormControl>
+            {statusOne === "free" && (
+              <TextField
+                value={amount}
+                name="amount"
+                label="Amount"
+                type="number"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                onChange={handleAmountNameChange}
+                size="small"
+              />
+            )}
           </Box>
         </DialogContent>
 
@@ -270,18 +304,21 @@ export default function UserTable() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow className="text-left bg-gray-2 dark:bg-meta-4">
-              <TableCell className="text-black dark:text-white">
+              <TableCell className="text-black dark:text-white" align="center">
                 <Typography className="pl-9" variant="subtitle1">
                   User
                 </Typography>
               </TableCell>
-              <TableCell className="text-black dark:text-white" align="left">
+              <TableCell className="text-black dark:text-white" align="center">
+                <Typography variant="subtitle1">Phone Number</Typography>
+              </TableCell>
+              <TableCell className="text-black dark:text-white" align="center">
                 <Typography variant="subtitle1">Amount</Typography>
               </TableCell>
-              <TableCell className="text-black dark:text-white" align="left">
+              <TableCell className="text-black dark:text-white" align="center">
                 <Typography variant="subtitle1">Status</Typography>
               </TableCell>
-              <TableCell className="text-black dark:text-white" align="left">
+              <TableCell className="text-black dark:text-white" align="center">
                 <Typography variant="subtitle1">Action</Typography>
               </TableCell>
             </TableRow>
@@ -293,7 +330,7 @@ export default function UserTable() {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  <div className="flex flex-row items-center space-x-4 pl-9">
+                  <div className="flex flex-row items-center space-x-4 pl-9 justify-center">
                     <div className="flex-shrink-0">
                       <Image
                         className="rounded-full"
@@ -324,38 +361,53 @@ export default function UserTable() {
                       </div>
                       <Typography
                         className="text-black dark:text-white"
-                        variant="caption"
+                        variant="subtitle2"
                       >
                         {packageItem.email}
                       </Typography>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell align="left">
+                <TableCell align="center">
+                  <Typography
+                    className="text-black dark:text-white"
+                    variant="subtitle2"
+                  >
+                    {packageItem.phone}
+                  </Typography>
+                </TableCell>
+                <TableCell align="center">
                   <Typography
                     className="text-black dark:text-white"
                     variant="subtitle1"
                   >
-                    {packageItem.amount === 0
+                    {packageItem.status === "premium"
+                      ? "♾️"
+                      : packageItem.amount === 0
                       ? "Free tier Limited"
                       : packageItem.amount}
                   </Typography>
                 </TableCell>
-                <TableCell align="left">
+                <TableCell align="center">
                   <p
                     className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${
-                      packageItem.status === "verified"
-                        ? "text-success bg-success"
-                        : packageItem.status === "unverified"
-                        ? "text-danger bg-danger"
-                        : "text-warning bg-warning"
+                      packageItem.status === "premium"
+                        ? "text-primary bg-primary"
+                        : packageItem.status === "free"
+                        ? "text-warning bg-warning"
+                        : "text-success bg-success"
                     }`}
                   >
-                    {packageItem.status}
+                    {packageItem.status.toUpperCase()}
                   </p>
                 </TableCell>
-                <TableCell align="right">
-                  <Stack direction="row" spacing={1}>
+                <TableCell align="center">
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    justifyContent="center"
+                  >
                     <IconButton
                       color="primary"
                       onClick={() => handleModal(packageItem)}

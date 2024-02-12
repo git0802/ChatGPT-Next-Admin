@@ -7,6 +7,7 @@ const SettingSchema = new Schema(
     apikey: { type: String },
     mistralapikey: { type: String },
     limit: { type: Number },
+    redirectURL: { type: String },
   },
   { timestamps: true }
 );

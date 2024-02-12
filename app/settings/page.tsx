@@ -18,7 +18,7 @@ import KeyIcon from "@mui/icons-material/Key";
 import DeleteIcon from "@mui/icons-material/Delete";
 // import DatasetIcon from "@mui/icons-material/Dataset";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ApikeyDialog from "@/components/Dialog/ApikeyDialog";
 import axios from "axios";
 import { LoadingButton } from "@mui/lab";
@@ -27,6 +27,7 @@ const Setting = () => {
   const [openaiKey, setOpenaiKey] = useState("");
   const [mistralKey, setMistralKey] = useState("");
   const [limit, setLimit] = useState<Number>(0);
+  const [redirectURL, setRedirectURL] = useState("");
 
   const [snackbarMessage, setSnackbarMessage] = useState<boolean>();
 
@@ -55,10 +56,10 @@ const Setting = () => {
           setOpenaiKey(data[i].apikey);
           setMistralKey(data[i].mistralapikey);
           setLimit(data[i].limit);
+          setRedirectURL(data[i].redirectURL);
         }
       }
 
-      console.log(data);
       handleBackdropClose();
     } catch (error) {
       console.error(error);
@@ -79,6 +80,49 @@ const Setting = () => {
       setLimit(valueAsNumber);
     } else {
       setLimit(0);
+    }
+  };
+
+  const handleRedirectURLChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const valueAsURL = String(event.target.value);
+
+    setRedirectURL(valueAsURL);
+  };
+
+  const handleRedirectURLSet = async () => {
+    try {
+      const data = {
+        id: "default",
+        redirectURL: redirectURL,
+      };
+
+      const response = await axios.post("api/setting", data);
+      setSnackbarMessage(true);
+      handleSnackbarOpen();
+      console.log("Response: ", response);
+    } catch (error) {
+      setSnackbarMessage(false);
+      handleSnackbarOpen();
+      console.error(error);
+    }
+  };
+
+  const handleRedirectURLClear = async () => {
+    try {
+      const data = {
+        id: "default",
+        redirectURL: "",
+      };
+
+      const response = await axios.post("api/setting", data);
+
+      setRedirectURL("");
+
+      console.log("Response: ", response);
+    } catch (error) {
+      console.error("Errors: ", error);
     }
   };
 
@@ -251,6 +295,41 @@ const Setting = () => {
             <div className="p-7">
               <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                 <div className="w-full sm:w-1/2 flex flex-col gap-5.5 ">
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    gap="30px"
+                  >
+                    <Stack>
+                      <Typography variant="subtitle1" gutterBottom>
+                        Product Link:
+                      </Typography>
+                    </Stack>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <TextField
+                        value={redirectURL}
+                        type="text"
+                        id="redirectURL"
+                        variant="outlined"
+                        placeholder="Redirect URL"
+                        onChange={handleRedirectURLChange}
+                        fullWidth
+                        required
+                        size="small"
+                        sx={{ width: "100%" }}
+                      />
+                      <IconButton onClick={handleRedirectURLClear}>
+                        <DeleteIcon />
+                      </IconButton>
+                      <Button
+                        variant="contained"
+                        onClick={handleRedirectURLSet}
+                      >
+                        SET
+                      </Button>
+                    </Stack>
+                  </Stack>
                   <Stack
                     direction="row"
                     alignItems="center"

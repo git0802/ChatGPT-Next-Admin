@@ -5,6 +5,7 @@ const UserSchema = new Schema(
   {
     userId: { type: String, required: true },
     amount: { type: Number },
+    status: { type: String },
   },
   { timestamps: true }
 );

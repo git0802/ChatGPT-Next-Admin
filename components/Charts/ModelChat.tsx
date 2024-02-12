@@ -1,6 +1,6 @@
 "use client";
 import { ApexOptions } from "apexcharts";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -12,7 +12,7 @@ const options: ApexOptions = {
     position: "top",
     horizontalAlign: "left",
   },
-  colors: ["#3C50E0", "#80CAEE"],
+  colors: ["#3C50E0", "#80CAEE", "#FFA70B"],
   chart: {
     // events: {
     //   beforeMount: (chart) => {
@@ -55,18 +55,18 @@ const options: ApexOptions = {
   ],
   stroke: {
     width: [2, 2],
-    curve: "straight",
+    curve: "smooth",
   },
   // labels: {
   //   show: false,
   //   position: "top",
   // },
   grid: {
-    xaxis: {
-      lines: {
-        show: true,
-      },
-    },
+    // xaxis: {
+    //   lines: {
+    //     show: true,
+    //   },
+    // },
     yaxis: {
       lines: {
         show: true,
@@ -79,7 +79,7 @@ const options: ApexOptions = {
   markers: {
     size: 4,
     colors: "#fff",
-    strokeColors: ["#3056D3", "#80CAEE"],
+    strokeColors: ["#3056D3", "#80CAEE", "#FFA70B"],
     strokeWidth: 3,
     strokeOpacity: 0.9,
     strokeDashArray: 0,
@@ -91,21 +91,7 @@ const options: ApexOptions = {
     },
   },
   xaxis: {
-    type: "category",
-    categories: [
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-    ],
+    // categories: ["Sep", "Oct", "Nov", "Dec", "Jan", "Feb"],
     axisBorder: {
       show: false,
     },
@@ -113,14 +99,10 @@ const options: ApexOptions = {
       show: false,
     },
   },
-  yaxis: {
-    title: {
-      style: {
-        fontSize: "0px",
-      },
+  tooltip: {
+    x: {
+      format: "dd MMM yyyy",
     },
-    min: 0,
-    max: 100,
   },
 };
 
@@ -131,20 +113,42 @@ interface ChartOneState {
   }[];
 }
 
-const ModelChat: React.FC = () => {
-  const [state, setState] = useState<ChartOneState>({
-    series: [
-      {
-        name: "Product One",
-        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
-      },
+const ModelChat = (props: any) => {
+  const { categories, data, max } = props;
 
-      {
-        name: "Product Two",
-        data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
-      },
-    ],
-  });
+  if (
+    !data ||
+    data.length < 3 ||
+    !data[0].name ||
+    !data[1].name ||
+    !data[2].name
+  ) {
+    console.error("Invalid data structure:", data);
+    // Handle the invalid data case here (e.g., setting a default state or error handling)
+  }
+
+  const [state, setState] = useState<ChartOneState>({ series: [] });
+
+  useEffect(() => {
+    setState({
+      series: [
+        {
+          name: data[0]?.name,
+          data: data[0]?.data,
+        },
+
+        {
+          name: data[1]?.name,
+          data: data[1]?.data,
+        },
+
+        {
+          name: data[2]?.name,
+          data: data[2]?.data,
+        },
+      ],
+    });
+  }, [data]);
 
   const handleReset = () => {
     setState((prevState) => ({
@@ -158,6 +162,26 @@ const ModelChat: React.FC = () => {
   const isWindowAvailable = () => typeof window !== "undefined";
 
   if (!isWindowAvailable()) return <></>;
+
+  const combineOption = (options: any): ApexOptions => {
+    return {
+      ...options,
+      xaxis: {
+        type: "category",
+        categories: categories,
+      },
+
+      yaxis: {
+        title: {
+          style: {
+            fontSize: "0px",
+          },
+        },
+        min: 0,
+        max: Math.ceil(max * 1.2),
+      },
+    };
+  };
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
@@ -182,13 +206,11 @@ const ModelChat: React.FC = () => {
             </div>
           </div>
           <div className="flex min-w-60">
-            <span className="flex items-center justify-center w-full h-4 mt-1 mr-2 border border-yellow-500 rounded-full max-w-4">
-              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-yellow-400"></span>
+            <span className="flex items-center justify-center w-full h-4 mt-1 mr-2 border rounded-full border-warning max-w-4">
+              <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-warning"></span>
             </span>
             <div className="w-full">
-              <p className="font-semibold text-yellow-400">
-                Mistral-Medium Usage
-              </p>
+              <p className="font-semibold text-warning">Mistral-Medium Usage</p>
             </div>
           </div>
         </div>
@@ -197,7 +219,7 @@ const ModelChat: React.FC = () => {
       <div>
         <div id="chartOne" className="-ml-5 h-[355px] w-[105%]">
           <ReactApexChart
-            options={options}
+            options={combineOption(options)}
             series={state.series}
             type="area"
             width="100%"

@@ -72,7 +72,7 @@ const ECommerce: React.FC = () => {
   // }
 
   function isGpt4(data: any) {
-    return data === "gpt-4-1106-preview";
+    return data === "gpt-4-0125-preview";
   }
 
   function isGpt3(data: any) {
@@ -177,7 +177,7 @@ const ECommerce: React.FC = () => {
 
     setLargestValue(maxTotalTokens);
 
-    const allModels = ["gpt-3.5-turbo", "gpt-4-1106-preview", "mistral-medium"];
+    const allModels = ["gpt-3.5-turbo", "gpt-4-0125-preview", "mistral-medium"];
 
     const completeData = tokenSummaryArray.map((day) => {
       // Create an object to store total tokens for each model

@@ -2,10 +2,12 @@
 import React, { useEffect, useState } from "react";
 import ModelChat from "@/components/Charts/ModelChat";
 import CardDataStats from "@/components/CardDataStats";
+import CardUserStats from "@/components/CardUserStats";
 import axios from "axios";
 import BackdropPage from "@/components/Backdrop/Backdrop";
 
 import PaymentsIcon from "@mui/icons-material/Payments";
+import GroupIcon from "@mui/icons-material/Group";
 
 import BasicDateRangePicker from "@/components/DataRangePicker";
 
@@ -23,36 +25,54 @@ const ECommerce: React.FC = () => {
   const [maxDate, setMaxDate] = useState<Date>();
   const [categories, setCategories] = useState<any>([]);
 
+  const [dailyActUsers, setDailyActUsers] = useState(0);
+  const [monthlyActUsers, setMonthlyActUsers] = useState(0);
+  const [dailyFreeUsers, setDailyFreeUsers] = useState(0);
+  const [monthlyFreeUsers, setMonthlyFreeUsers] = useState(0);
+  const [dailyPaidUsers, setDailyPaidUsers] = useState(0);
+  const [monthlyPaidUsers, setMonthlyPaidUsers] = useState(0);
+
   const [chartData, setChartData] = useState<any>([]);
   const [largestValue, setLargestValue] = useState(0);
 
-  // function isToday(data: any) {
-  //   const today = new Date();
-  //   const date = new Date(data);
-  //   return (
-  //     date.getDate() === today.getDate() &&
-  //     date.getMonth() === today.getMonth() &&
-  //     date.getFullYear() === today.getFullYear()
-  //   );
-  // }
-
-  // function isWithinLastWeek(data: any) {
-  //   const now = new Date();
-  //   const date = new Date(data);
-  //   const oneWeekAgo = new Date(
-  //     now.getFullYear(),
-  //     now.getMonth(),
-  //     now.getDate() - 7
-  //   );
-
-  function isWithinDate(date: Date, startDate: Date, endDate: Date) {
-    const Currentdate = new Date(date);
-
-    return Currentdate >= startDate && Currentdate <= endDate;
+  function isToday(data: any) {
+    const today = new Date();
+    const date = new Date(data);
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
   }
 
-  //   return date >= oneWeekAgo && date <= now;
-  // }
+  function isWithinLastMonth(data: any) {
+    const now = new Date();
+    const date = new Date(data);
+    const tomorrow = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1
+    );
+    const oneMonthAgo = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - 30
+    );
+
+    return date >= oneMonthAgo && date <= tomorrow;
+  }
+
+  function isFree(data: any) {
+    if (data === "free") {
+      return data;
+    }
+  }
+
+  function isPaid(data: any) {
+    if (data === "premium") {
+      return data;
+    }
+  }
 
   // function formatDate(date: any) {
   //   return date.toISOString().split("T")[0];
@@ -221,11 +241,45 @@ const ECommerce: React.FC = () => {
     handleBackdropOpen();
     try {
       const { data } = await axios.get("/api/usage");
+      const response = await axios.get("/api/user");
+      const userData = response.data.userData;
+
+      const todayUser = data.filter((item: any) => isToday(item.createdAt));
+      const monthUser = data.filter((item: any) =>
+        isWithinLastMonth(item.createdAt)
+      );
+      const dailyActuserData = new Set(
+        todayUser.map((item: any) => item.email)
+      );
+      const monthlyActUserData = new Set(
+        monthUser.map((item: any) => item.email)
+      );
+
+      setDailyActUsers(dailyActuserData.size);
+      setMonthlyActUsers(monthlyActUserData.size);
+
+      const freeUser = userData.filter((item: any) => isFree(item.status));
+      const dailyFreeUserData = freeUser.filter((item: any) =>
+        isToday(item.createdAt)
+      );
+
+      setDailyFreeUsers(dailyFreeUserData.length);
+      const monthlyFreeUserData = freeUser.filter((item: any) =>
+        isWithinLastMonth(item.createdAt)
+      );
+      setMonthlyFreeUsers(monthlyFreeUserData.length);
+      const paidUser = userData.filter((item: any) => isPaid(item.status));
+      const dailyPaidUserData = paidUser.filter((item: any) =>
+        isToday(item.createdAt)
+      );
+
+      setDailyPaidUsers(dailyPaidUserData.length);
+      const monthlyPaidUserData = paidUser.filter((item: any) =>
+        isWithinLastMonth(item.createdAt)
+      );
+      setMonthlyPaidUsers(monthlyPaidUserData.length);
 
       // setLogs(data);
-
-      // const userData = new Set(data.map((item: any) => item.email));
-      // setUsers(userData);
 
       // const today = data.filter((item: any) => isToday(item.createdAt));
       // setTodayData(today);
@@ -289,12 +343,6 @@ const ECommerce: React.FC = () => {
 
       setTotalCost(total);
 
-      const date = getInitialDate(logs);
-      const today = new Date();
-
-      setMinDate(date);
-      setMaxDate(today);
-
       tokenArray(logs);
 
       handleBackdropClose();
@@ -320,12 +368,32 @@ const ECommerce: React.FC = () => {
     <>
       <BackdropPage open={backdropOpen} handleClose={handleBackdropClose} />
 
+      <div className="grid w-full grid-cols-3 gap-4">
+        <CardUserStats
+          title="Active Users"
+          daily={dailyActUsers}
+          monthly={monthlyActUsers}
+        >
+          <GroupIcon color="primary" />
+        </CardUserStats>
+        <CardUserStats
+          title="Free Users"
+          daily={dailyFreeUsers}
+          monthly={monthlyFreeUsers}
+        >
+          <GroupIcon color="warning" />
+        </CardUserStats>
+        <CardUserStats
+          title="Paid Users"
+          daily={dailyPaidUsers}
+          monthly={monthlyPaidUsers}
+        >
+          <GroupIcon color="success" />
+        </CardUserStats>
+      </div>
+
       <div className="flex w-full gap-4 my-5">
-        <BasicDateRangePicker
-          minDate={minDate}
-          maxDate={maxDate}
-          setLogs={setLogs}
-        />
+        <BasicDateRangePicker setLogs={setLogs} />
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-2 2xl:gap-7.5 w-full">
           <CardDataStats

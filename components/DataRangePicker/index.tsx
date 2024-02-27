@@ -8,7 +8,11 @@ import { DateRange } from "react-date-range";
 import axios from "axios";
 
 export default function BasicDateRangePicker(props: any) {
-  const { minDate, maxDate, setLogs } = props;
+  const now = new Date();
+  const minDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  const maxDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+  const { setLogs } = props;
   const [state, setState] = useState([
     {
       startDate: minDate,
